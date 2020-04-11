@@ -7,7 +7,7 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 
-const int PORT_NUMBER = 24130;
+static const int PORT_NUMBER = 24130;
 
 int main() {
   std::cout << "Server" << std::endl;
@@ -26,10 +26,10 @@ int main() {
     client.receive(packet);
     sf::Int32 x;
     packet >> x;
-    std::cout << "Client has send: " << x << std::endl;
+    std::cout << "Client has sent: " << x << std::endl;
     packet.clear();
     packet << x * x;
     client.send(packet);
   }
-
+  return 0;
 }

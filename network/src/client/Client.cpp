@@ -6,12 +6,17 @@
 
 #include <SFML/Network.hpp>
 #include <iostream>
+#include <string>
 
 const int PORT_NUMBER = 24130;
 
 int main() {
   sf::TcpSocket socket;
-  sf::Socket::Status status = socket.connect(sf::IpAddress::getLocalAddress(), PORT_NUMBER);
+  std::string ipAddress;
+  std::cout << "Enter ip address" << std::endl;
+  std::cin >> ipAddress;
+
+  sf::Socket::Status status = socket.connect(ipAddress, PORT_NUMBER);
   if (status != sf::Socket::Done) {
     std::cout << "Oups...";
   } else {
