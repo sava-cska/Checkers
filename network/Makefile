@@ -1,6 +1,6 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -O2 -pedantic -Wall -Wextra -Werror -Iinclude
-LDFLAGS = -lsfml-network -lsfml-system
+LDFLAGS = -lsfml-network -lsfml-system -lpthread
 
 SRCDIR = src
 OBJDIR = obj

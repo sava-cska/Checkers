@@ -6,6 +6,7 @@
 
 #include <SFML/Network.hpp>
 #include <iostream>
+#include <list>
 
 static const int PORT_NUMBER = 24130;
 
@@ -17,19 +18,34 @@ int main() {
     std::cout << "Server error!" << std::endl;
   }
 
-  sf::TcpSocket client;
-  if (listener.accept(client) != sf::Socket::Done) {
-    std::cout << "Error in accepting client" << std::endl;
-  } else {
-    std::cout << "Success!" << std::endl;
-    sf::Packet packet;
-    client.receive(packet);
-    sf::Int32 x;
-    packet >> x;
-    std::cout << "Client has sent: " << x << std::endl;
-    packet.clear();
-    packet << x * x;
-    client.send(packet);
+  sf::SocketSelector selector;
+  selector.add(listener);
+  std::list<sf::TcpSocket *> clients;
+
+  while (true) {
+    if (selector.wait()) {
+      if (selector.isReady(listener)) {
+        sf::TcpSocket *client = new sf::TcpSocket;
+        if (listener.accept(*client) != sf::Socket::Done) {
+          delete client;
+        } else {
+          clients.push_back(client);
+          selector.add(*client);
+        }
+      } else {
+        for (sf::TcpSocket *client : clients) {
+          if (selector.isReady(*client)) {
+            sf::Packet packet;
+            if (client->receive(packet) == sf::Socket::Done) {
+              for (sf::TcpSocket *other_client : clients) {
+                other_client->send(packet);
+              }
+            }
+          }
+        }
+      }
+    }
   }
+
   return 0;
 }

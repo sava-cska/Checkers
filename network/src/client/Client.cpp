@@ -7,6 +7,7 @@
 #include <SFML/Network.hpp>
 #include <iostream>
 #include <string>
+#include <thread>
 
 const int PORT_NUMBER = 24130;
 
@@ -18,17 +19,31 @@ int main() {
 
   sf::Socket::Status status = socket.connect(ipAddress, PORT_NUMBER);
   if (status != sf::Socket::Done) {
-    std::cout << "Oups...";
+    std::cout << "Can't connect." << std::endl;
   } else {
-    std::cout << "Connected!\nEnter number" << std::endl;
-    sf::Packet packet;
-    sf::Int32 x;
-    std::cin >> x;
-    packet << x;
-    socket.send(packet);
-    socket.receive(packet);
-    packet >> x;
-    std::cout << "Server has answered: " << x << std::endl;
+    std::cout << "Successfully connected!" << std::endl;
+
+    std::thread send([&socket] {
+      std::string s;
+      while (std::cin >> s) {
+        sf::Packet packet;
+        packet << s;
+        socket.send(packet);
+      }
+    });
+
+    std::thread receive([&socket] {
+      while (true) {
+        sf::Packet packet;
+        socket.receive(packet);
+        std::string s;
+        packet >> s;
+        std::cout << s << std::endl;
+      }
+    });
+
+    send.join();
+    receive.join();
   }
   return 0;
 }
