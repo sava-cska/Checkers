@@ -4,7 +4,7 @@
 #include <vector>
 #include <iostream>
 #include <fstream>
-#include <expat.h>
+//#include <expat.h>
 
 enum state {GAME, FIRST_WIN, SECOND_WIN, DRAW};
 
@@ -33,7 +33,7 @@ public:
 	
 	void save_to_file(std::ofstream &os) const;
 
-	friend void XMLCALL dataElement (void *userData, const XML_Char *s, int len);
+//	friend void XMLCALL dataElement (void *userData, const XML_Char *s, int len);
 };
 
 class Game
@@ -47,10 +47,10 @@ public:
 	void add_state(Game_state st);
 	Game_state watch_state(int number) const;
 
-	void load_from_file(const std::string &file);
+//	void load_from_file(const std::string &file);
 	void save_to_file(const std::string &file) const;
 
-	friend void XMLCALL endElement(void *userData, const XML_Char *name);
+//	friend void XMLCALL endElement(void *userData, const XML_Char *name);
 };
 
 #endif
