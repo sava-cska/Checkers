@@ -14,9 +14,9 @@ private:
 	static const int SIZE = 8;
 	static const int DRAW_MOVE = 15;
 
-	char board[SIZE][SIZE];
 	int who_last, move_to_draw, type_last;
 	std::pair <int, int> last_move;
+	char board[SIZE][SIZE];
 
 	bool check_ordinary(int player, std::pair <int, int> from, std::pair <int, int> to) const;
 	bool check_queen(int player, std::pair <int, int> from, std::pair <int, int> to) const;
@@ -25,6 +25,7 @@ private:
 	bool kill(int who, std::pair <int, int> pos) const;
 	std::pair <int, int> find_kill(int who) const;
 public:
+	char get(int x, int y);
 	Game_state();
 	int who_moves() const;
 	void move (int player, std::pair <int, int> from, std::pair <int, int> to);

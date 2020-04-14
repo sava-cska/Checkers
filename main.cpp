@@ -5,11 +5,13 @@
 
 int main()
 {
-	Game_state Game_state;
+	Game_state game_state;
 
 	sf::RenderWindow window;
     window.setFramerateLimit(60);
     window.create(sf::VideoMode(1280, 720), "Chess");
+
+	std::pair<int,int> past = {0, -1};
 
     while (window.isOpen()) {
         sf::Vector2f pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -19,7 +21,7 @@ int main()
 
         window.clear();
         draw_background(rendrer_list);
-        draw_table(rendrer_list);
+        draw_table(rendrer_list, game_state);
         
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -28,6 +30,8 @@ int main()
 
             if (event.type == sf::Event::MouseButtonPressed)
                 if(event.mouseButton.button == sf::Mouse::Left) {
+					
+
                     int count = -1;
                     int count1 = -1;
                     for (auto& elem : rendrer_list) {
@@ -39,7 +43,8 @@ int main()
                     
                     int x = count % 8;
 					int y = count / 8;
-					if (Game_state.who_moves())
+
+					game_state.move(game_state.who_moves(), past, std::make_pair(x,y));
                 }
         }
 

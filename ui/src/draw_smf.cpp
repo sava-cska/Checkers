@@ -20,7 +20,8 @@ void draw_background(std::list<sf::RectangleShape>& rendrer_list) {
     rendrer_list.push_back(block);
 }
 
-void draw_table(std::list<sf::RectangleShape>& rendrer_list, sf::Vector2f lu_point, sf::Vector2f rd_point) {
+void draw_table(std::list<sf::RectangleShape>& rendrer_list,  Game_state& game, sf::Vector2f lu_point, sf::Vector2f rd_point) {
+    std::list<sf::RectangleShape> buffer;
     sf::Vector2f size = rd_point - lu_point;
     for (size_t i = 0; i < 8; i++)
     {
@@ -36,6 +37,15 @@ void draw_table(std::list<sf::RectangleShape>& rendrer_list, sf::Vector2f lu_poi
                 block.setFillColor(sf::Color::White);
             }
             rendrer_list.push_back(block);
+
+            char t = game.get(j, i);
+            if (t != 0) {
+                block.setFillColor(sf::Color(0x73ff00));
+            }
+            buffer.push_back(block);
         }
+    }
+    for (auto& t : buffer) {
+        rendrer_list.push_back(t);
     }
 }

@@ -97,6 +97,10 @@ bool Game_state::kill(int who, std::pair <int, int> pos) const
 	return false;
 }
 
+char Game_state::get(int x, int y) {
+	return board[x][y];
+}
+
 std::pair <int, int> Game_state::find_kill(int who) const
 {
 	for (int i = 0; i < SIZE; i++)
