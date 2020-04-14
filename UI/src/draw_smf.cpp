@@ -15,7 +15,7 @@ bool operator >(sf::Vector2f a, sf::Vector2f b) {
 
 void draw_background(std::list<sf::RectangleShape>& rendrer_list) {
     sf::RectangleShape block;
-    block.setFillColor(sf::Color::Green);
+    block.setFillColor(sf::Color(0x453c3c));
     block.setSize(sf::Vector2f(1280, 720));
     rendrer_list.push_back(block);
 }
