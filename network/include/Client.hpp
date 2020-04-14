@@ -1,0 +1,10 @@
+//
+// Created by pospelov on 11.04.2020.
+//
+
+#ifndef CHECKERS_NETWORK_INCLUDE_CLIENT_HPP_
+#define CHECKERS_NETWORK_INCLUDE_CLIENT_HPP_
+
+class Client {};
+
+#endif // CHECKERS_NETWORK_INCLUDE_CLIENT_HPP_
