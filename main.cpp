@@ -1,11 +1,11 @@
 #include "model.h"
-#include "./UI/include/draw_smf.hpp"
 #include <iostream>
 #include <string>
+#include "draw_smf.hpp"
 
 int main()
 {
-	Game Game_state;
+	Game_state Game_state;
 
 	sf::RenderWindow window;
     window.setFramerateLimit(60);
@@ -27,7 +27,7 @@ int main()
             }
 
             if (event.type == sf::Event::MouseButtonPressed)
-                if(event.key.code == sf::Mouse::Left) {
+                if(event.mouseButton.button == sf::Mouse::Left) {
                     int count = -1;
                     int count1 = -1;
                     for (auto& elem : rendrer_list) {
@@ -39,6 +39,7 @@ int main()
                     
                     int x = count % 8;
 					int y = count / 8;
+					if (Game_state.who_moves())
                 }
         }
 
@@ -50,5 +51,5 @@ int main()
         window.display();
     }
 	
-	return 0;
+return 0;
 }
