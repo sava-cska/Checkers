@@ -231,6 +231,7 @@ Game_state Game::watch_state(int number) const
 	return game[number];
 }
 
+
 void Game::save_to_file(const std::string &file) const
 {
 	std::ofstream os(file);
@@ -240,6 +241,7 @@ void Game::save_to_file(const std::string &file) const
 	os << "</Game>\n";
 }
 
+/*
 struct helper
 {
 	Game g;
@@ -344,3 +346,4 @@ void Game::load_from_file(const std::string &file)
 	XML_ParserFree(parser);
 	return;
 }
+*/
