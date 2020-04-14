@@ -25,7 +25,7 @@ private:
 	bool kill(int who, std::pair <int, int> pos) const;
 	std::pair <int, int> find_kill(int who) const;
 public:
-	char get(int x, int y);
+	char get(int, int);
 	Game_state();
 	int who_moves() const;
 	void move (int player, std::pair <int, int> from, std::pair <int, int> to);

@@ -22,6 +22,7 @@ int main()
         window.clear();
         draw_background(rendrer_list);
         draw_table(rendrer_list, game_state);
+		draw_posible(rendrer_list, game_state, past);
         
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
@@ -39,16 +40,23 @@ int main()
                             count = count1;
                         }
                         count1++;
+						if (count1 > 63)
+							break;
                     }
                     
                     int x = count % 8;
 					int y = count / 8;
+					
+					std::cerr << past.first << ' ' << past.second << "     " << y << ' ' << x << '\n';
 
-					game_state.move(game_state.who_moves(), past, std::make_pair(x,y));
+					game_state.move(game_state.who_moves(), past, std::make_pair(y,x));
+
+					past = {y, x};
                 }
         }
 
         for (auto& elem : rendrer_list) {
+			
             window.draw(elem);
         }
         
