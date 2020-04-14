@@ -1003,8 +1003,8 @@ conftest.c: In function 'main':
 conftest.c:31:7: warning: implicit declaration of function 'arc4random_buf' [-Wimplicit-function-declaration]
        arc4random_buf(NULL, 0U);
        ^
-/tmp/ccp1NytD.o: In function `main':
-/home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftest.c:31: undefined reference to `arc4random_buf'
+/tmp/ccXNVfwq.o: In function `main':
+/home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftest.c:31: undefined reference to `arc4random_buf'
 collect2: error: ld returned 1 exit status
 configure:18100: $? = 1
 configure: failed program was:
@@ -1052,8 +1052,8 @@ conftest.c: In function 'main':
 conftest.c:32:11: warning: implicit declaration of function 'arc4random' [-Wimplicit-function-declaration]
            arc4random();
            ^
-/tmp/ccSesx9S.o: In function `main':
-/home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftest.c:32: undefined reference to `arc4random'
+/tmp/cc55C6LE.o: In function `main':
+/home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftest.c:32: undefined reference to `arc4random'
 collect2: error: ld returned 1 exit status
 configure:18126: $? = 1
 configure: failed program was:
@@ -1465,7 +1465,7 @@ lt_cv_truncate_bin='/bin/dd bs=4096 count=1'
 ## Output variables. ##
 ## ----------------- ##
 
-ACLOCAL='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing aclocal-1.16'
+ACLOCAL='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing aclocal-1.16'
 AMDEPBACKSLASH='\'
 AMDEP_FALSE='#'
 AMDEP_TRUE=''
@@ -1476,9 +1476,9 @@ AM_DEFAULT_VERBOSITY='1'
 AM_V='$(V)'
 AR='ar'
 AS='as'
-AUTOCONF='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing autoconf'
-AUTOHEADER='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing autoheader'
-AUTOMAKE='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing automake-1.16'
+AUTOCONF='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing autoconf'
+AUTOHEADER='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing autoheader'
+AUTOMAKE='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing automake-1.16'
 AWK='mawk'
 CC='gcc'
 CCDEPMODE='depmode=gcc3'
@@ -1520,7 +1520,7 @@ LIPO=''
 LN_S='ln -s'
 LTLIBOBJS=''
 LT_SYS_LIBRARY_PATH=''
-MAKEINFO='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing makeinfo'
+MAKEINFO='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing makeinfo'
 MANIFEST_TOOL=':'
 MINGW_FALSE=''
 MINGW_TRUE='#'
@@ -1591,7 +1591,7 @@ host_vendor='pc'
 htmldir='${docdir}'
 includedir='${prefix}/include'
 infodir='${datarootdir}/info'
-install_sh='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/install-sh'
+install_sh='${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/install-sh'
 libdir='${exec_prefix}/lib'
 libexecdir='${exec_prefix}/libexec'
 localedir='${datarootdir}/locale'

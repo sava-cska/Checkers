@@ -437,7 +437,7 @@ Copyright (C) 2012 Free Software Foundation, Inc.
 This config.status script is free software; the Free Software Foundation
 gives unlimited permission to copy, distribute and modify it."
 
-ac_pwd='/home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9'
+ac_pwd='/home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9'
 srcdir='.'
 INSTALL='/usr/bin/install -c'
 MKDIR_P='/bin/mkdir -p'
@@ -963,12 +963,12 @@ S["mkdir_p"]="$(MKDIR_P)"
 S["MKDIR_P"]="/bin/mkdir -p"
 S["INSTALL_STRIP_PROGRAM"]="$(install_sh) -c -s"
 S["STRIP"]="strip"
-S["install_sh"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/install-sh"
-S["MAKEINFO"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing makeinfo"
-S["AUTOHEADER"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing autoheader"
-S["AUTOMAKE"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing automake-1.16"
-S["AUTOCONF"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing autoconf"
-S["ACLOCAL"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/expat-2.2.9/conftools/missing aclocal-1.16"
+S["install_sh"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/install-sh"
+S["MAKEINFO"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing makeinfo"
+S["AUTOHEADER"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing autoheader"
+S["AUTOMAKE"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing automake-1.16"
+S["AUTOCONF"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing autoconf"
+S["ACLOCAL"]="${SHELL} /home/osboxes/Desktop/Spring_project/Elderly-pigeons/model/expat-2.2.9/conftools/missing aclocal-1.16"
 S["VERSION"]="2.2.9"
 S["PACKAGE"]="expat"
 S["CYGPATH_W"]="echo"

@@ -112,6 +112,12 @@ int Game_state::who_moves() const
 	else return 3 - who_last;
 }
 
+char Game_state::get_cell(std::pair <int, int> cell) const
+{
+	assert(inside(cell));
+	return board[cell.x][cell.y];
+}
+
 void Game_state::move(int player, std::pair <int, int> from, std::pair <int, int> to)
 {
 	if (who_moves() != player) return;

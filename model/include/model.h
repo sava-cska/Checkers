@@ -27,6 +27,7 @@ private:
 public:
 	Game_state();
 	int who_moves() const;
+	char get_cell(std::pair <int, int> cell) const;
 	void move (int player, std::pair <int, int> from, std::pair <int, int> to);
 	std::vector <std::pair <int, int> > get_list_of_correct_moves(int player, std::pair <int, int> from) const;
 	state check_win() const;
