@@ -67,10 +67,12 @@ void draw_table(std::list<sf::RectangleShape>& rendrer_list,  Game_state& game, 
     }
 }
 
-void draw_posible(std::list<sf::RectangleShape> render_list,Game_state game_state,std::pair<int,int> past, sf::Vector2f lu_point, sf::Vector2f rd_point) {
+void draw_possible(std::list<sf::RectangleShape>& render_list,Game_state& game_state,std::pair<int,int> past,
+ sf::Vector2f lu_point, sf::Vector2f rd_point) {
     sf::Vector2f size = rd_point - lu_point;
     auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
-    for (auto& a: b) {
+    for (auto& a: b) { 
+        std::cerr << b.size() << ' ' << size.x << size.y << ' ' << a.first << a.second << std::endl;
         sf::RectangleShape block;
         block.setSize(size / 8);
         block.setPosition(size.x / 8 * a.second, size.y / 8 * a.first);
@@ -78,5 +80,4 @@ void draw_posible(std::list<sf::RectangleShape> render_list,Game_state game_stat
         block.setFillColor(sf::Color::Blue);
         render_list.push_back(block);
     }
-    
 }

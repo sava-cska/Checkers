@@ -22,7 +22,7 @@ int main()
         window.clear();
         draw_background(rendrer_list);
         draw_table(rendrer_list, game_state);
-		draw_posible(rendrer_list, game_state, past);
+		draw_possible(rendrer_list, game_state, past);
         
         while (window.pollEvent(event)) {
             if (event.type == sf::Event::Closed) {
