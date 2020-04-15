@@ -1,22 +1,20 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -O2 -pedantic -Wall -Wextra -Werror
 LDFLAGS = -lsfml-network -lsfml-system -lsfml-window -lsfml-graphics -lpthread
-INC = -Inetwork/include -Imodel/include -Iui/include
+INC = -Inetwork -Imodel -Iui
 
 OBJDIR = obj
 MAIN = main
 
-SRCDIR_MODEL = model/src
-SRCDIR_NETWORK = network/src
-SRCDIR_UI = ui/src
+SRCDIR_MODEL = model
+SRCDIR_NETWORK = network
+SRCDIR_UI = ui
 
 OBJECTS_MODEL = $(patsubst $(SRCDIR_MODEL)/%.cpp,$(OBJDIR)/%.o,$(wildcard $(SRCDIR_MODEL)/*.cpp))
 OBJECTS_NETWORK = $(patsubst $(SRCDIR_NETWORK)/%.cpp,$(OBJDIR)/%.o,$(wildcard $(SRCDIR_NETWORK)/*.cpp))
 OBJECTS_UI = $(patsubst $(SRCDIR_UI)/%.cpp,$(OBJDIR)/%.o,$(wildcard $(SRCDIR_UI)/*.cpp))
 
 EXE = game
-
-$(info $(OBJECTS_UI))
 
 all: $(EXE)
 

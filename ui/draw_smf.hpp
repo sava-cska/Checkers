@@ -1,7 +1,7 @@
 #pragma once
 
 #include <SFML/Graphics.hpp>
-#include "model.h"
+#include "model.hpp"
 #include <list>
 #include <string>
 #include <iostream>
