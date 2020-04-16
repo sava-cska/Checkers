@@ -1,20 +1,20 @@
-CFLAGS = -I include -Wall -Wextra -std=c++14
+CFLAGS = -std=c++14 -Wall -Wextra
 
 all: model
 
-obj:
-	mkdir obj
+game_state.o: game_state.hpp game_state.cpp
+	g++ $(CFLAGS) -c game_state.cpp -o game_state.o
 
-obj/model.o: include/model.h src/model.cpp | obj
-	g++ $(CFLAGS) -c src/model.cpp -o obj/model.o
+game.o: game.hpp game_state.hpp game.cpp
+	g++ $(CFLAGS) -c game.cpp -o game.o
 
-obj/main.o: main.cpp | obj
-	g++ $(CFLAGS) -c main.cpp -o obj/main.o
+main.o: game.hpp main.cpp
+	g++ $(CFLAGS) -c main.cpp -o main.o
 
-model: obj/model.o obj/main.o
-	g++ $(CFLAGS) expat-2.2.9/lib/xmlparse.o expat-2.2.9/lib/xmlrole.o expat-2.2.9/lib/xmltok.o obj/model.o obj/main.o -o model
+model: game.o game_state.o main.o
+	g++ $(CFLAGS) game.o game_state.o main.o -lexpat -o model
 
 clean:
-	rm -rf obj model
+	rm game.o game_state.o model main.o
 
 .PHONY: all clean
