@@ -1,3 +1,4 @@
+/*
 #include "game.hpp"
 
 int main()
@@ -10,3 +11,4 @@ int main()
 	game.save_to_file(t);
 	return 0;
 }
+*/
