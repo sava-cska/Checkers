@@ -1,19 +1,37 @@
 //
 // Created by pospelov on 18.04.2020.
 //
-#include "draw_smf.hpp"
-#include "game.hpp"
 #include <iostream>
 #include <string>
 
-int main() {
+#include "draw_smf.hpp"
+#include "game.hpp"
+#include "Network.hpp"
+
+int main(int argc, char **argv) {
   Game_state game_state;
 
   sf::RenderWindow window;
   window.setFramerateLimit(60);
   window.create(sf::VideoMode(1280, 720), "Chess");
-
   board_cell past_cell = {0, -1};
+
+  if (argc < 2) {
+    return 1;
+  }
+
+  Network network;
+
+  number_of_player me = FIRST;
+
+  int flex = atoi(argv[1]);
+  if (flex == -1) {
+    network.setup_server();
+    me = FIRST;
+  } else {
+    network.connect_to_player(sf::IpAddress(flex));
+    me = SECOND;
+  }
 
   while (window.isOpen()) {
     sf::Vector2f pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -31,27 +49,37 @@ int main() {
         window.close();
       }
 
-      if (event.type == sf::Event::MouseButtonPressed)
-        if (event.mouseButton.button == sf::Mouse::Left) {
-
-          int count = -1;
-          int count1 = -1;
-          for (auto &elem : rendrer_list) {
-            if ((elem.getPosition() < pos) &&
-                (elem.getPosition() + elem.getSize()) > pos) {
-              count = count1;
+      if (game_state.who_moves() == me) {
+        if (event.type == sf::Event::MouseButtonPressed) {
+          if (event.mouseButton.button == sf::Mouse::Left) {
+            int count = -1;
+            int count1 = -1;
+            for (auto &elem : rendrer_list) {
+              if ((elem.getPosition() < pos) &&
+                  (elem.getPosition() + elem.getSize()) > pos) {
+                count = count1;
+              }
+              count1++;
+              if (count1 > 63)
+                break;
             }
-            count1++;
-            if (count1 > 63)
-              break;
+
+            board_cell current_cell = {count / 8, count % 8};
+
+            game_state.move(game_state.who_moves(), past_cell, current_cell);
+            network.send_move(past_cell, current_cell);
+
+            past_cell = current_cell;
           }
-
-          board_cell current_cell = {count / 8, count % 8};
-
-          game_state.move(game_state.who_moves(), past_cell, current_cell);
-
-          past_cell = current_cell;
         }
+      } else {
+        board_cell enemy_past_cell, enemy_current_cell;
+        if (network.get_enemy_move(enemy_past_cell, enemy_current_cell)) {
+          std::cerr << "enemy\n";
+          game_state.move(game_state.who_moves(), enemy_past_cell, enemy_current_cell);
+        }
+        past_cell = {0, -1};
+      }
     }
 
     for (auto &elem : rendrer_list) {

@@ -18,12 +18,16 @@ bool Network::setup_server() {
     return false;
   }
 
+  std::cerr << "OK!\n";
+
   if (listener.accept(enemy_socket) != sf::Socket::Done) {
     std::cerr << "Connecting error!\n";
     return false;
   }
 
-  listener.close();
+  std::cerr << "OK!?\n";
+
+//  listener.close();
 
   std::cerr << enemy_socket.getRemoteAddress() << " has successfully connected!\n";
   enemy_socket.setBlocking(false);
@@ -36,14 +40,15 @@ bool Network::connect_to_player(const sf::IpAddress &ip_address) {
     std::cerr << "Can't connect!\n";
     return false;
   }
+  enemy_socket.setBlocking(false);
   std::cerr << "Successfully connected!";
 
   return true;
 }
 
-bool Network::send_move(const pair<int, int> &from, const pair<int, int> &to) {
+bool Network::send_move(const board_cell &from, const board_cell &to) {
   sf::Packet packet;
-  packet << from.first << from.second << to.first << to.second;
+  packet << from.x << from.y << to.x << to.y;
   sf::Socket::Status status = enemy_socket.send(packet);
   while (status == sf::Socket::Partial) {
     status = enemy_socket.send(packet);
@@ -51,11 +56,11 @@ bool Network::send_move(const pair<int, int> &from, const pair<int, int> &to) {
   return status == sf::Socket::Done;
 }
 
-bool Network::get_enemy_move(pair<int, int> &from, pair<int, int> &to) {
+bool Network::get_enemy_move(board_cell &from, board_cell &to) {
   sf::Packet packet;
-  if (enemy_socket.receive(packet) != sf::Socket::NotReady) {
+  if (enemy_socket.receive(packet) == sf::Socket::NotReady) {
     return false;
   }
-  packet >> from.first >> from.second >> to.first >> to.second;
+  packet >> from.x >> from.y >> to.x >> to.y;
   return true;
 }

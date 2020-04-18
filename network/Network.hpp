@@ -7,20 +7,19 @@
 
 #include <SFML/Network.hpp>
 #include <utility>
-//#include "model.hpp"
-
+#include "game.hpp"
 
 class Network {
 public:
-  Network(int);
+  Network(int = 24310);
 
   bool setup_server();
 
   bool connect_to_player(const sf::IpAddress &);
 
-  bool send_move(const std::pair<int, int> &, const std::pair<int, int> &);
+  bool send_move(const board_cell &, const board_cell &);
 
-  bool get_enemy_move(std::pair<int, int> &, std::pair<int, int> &);
+  bool get_enemy_move(board_cell &, board_cell &);
 
 private:
   const int PORT;
