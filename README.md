@@ -5,6 +5,10 @@ Project from our (with sergeypospelov and Yurafobus1) team at spring 2020.
 
 `sudo apt-get install libexpat1-dev`
 
+Для установки библиотеки cppunit надо в командной строке ввести:
+
+`sudo apt-get install libcppunit-dev`
+
 install SFML
 
 `sudo apt-get install libsfml-dev`
