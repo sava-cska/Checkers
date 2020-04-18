@@ -1,5 +1,8 @@
+//
+// Created by pospelov on 18.04.2020.
+//
 #include "draw_smf.hpp"
-#include "model.hpp"
+#include "game.hpp"
 #include <iostream>
 #include <string>
 
@@ -10,19 +13,18 @@ int main() {
   window.setFramerateLimit(60);
   window.create(sf::VideoMode(1280, 720), "Chess");
 
-  std::pair<int, int> past = {0, -1};
+  board_cell past_cell = {0, -1};
 
   while (window.isOpen()) {
     sf::Vector2f pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
     std::list<sf::RectangleShape> rendrer_list;
-
 
     sf::Event event;
 
     window.clear();
     draw_background(rendrer_list);
     draw_table(rendrer_list, game_state);
-    draw_possible(rendrer_list, game_state, past);
+    draw_possible(rendrer_list, game_state, past_cell);
 
     while (window.pollEvent(event)) {
       if (event.type == sf::Event::Closed) {
@@ -44,15 +46,11 @@ int main() {
               break;
           }
 
-          int x = count % 8;
-          int y = count / 8;
+          board_cell current_cell = {count / 8, count % 8};
 
-          std::cerr << past.first << ' ' << past.second << "     " << y << ' '
-                    << x << '\n';
+          game_state.move(game_state.who_moves(), past_cell, current_cell);
 
-          game_state.move(game_state.who_moves(), past, std::make_pair(y, x));
-
-          past = {y, x};
+          past_cell = current_cell;
         }
     }
 
@@ -66,9 +64,6 @@ int main() {
   return 0;
 }
 
-int main() {
-
-}
 /*
 
 int main() {
