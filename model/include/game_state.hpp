@@ -1,6 +1,7 @@
 #ifndef _GAME_STATE_HPP_
 #define _GAME_STATE_HPP_
 
+#include "board_cell.hpp"
 #include <fstream>
 #include <iostream>
 #include <vector>
@@ -8,16 +9,6 @@
 
 enum state { GAME, FIRST_WIN, SECOND_WIN, DRAW };
 enum number_of_player { FIRST, SECOND };
-
-struct board_cell
-{
-public:
-  int x, y;
-public:
-  board_cell(int a = 0, int b = 0);
-  bool operator == (board_cell oth) const;
-  bool operator != (board_cell oth) const;
-};
 
 class Game_state {
 private:
@@ -49,6 +40,8 @@ public:
 
   void save_to_file(std::ofstream &os) const;
   friend void XMLCALL dataElement (void *userData, const XML_Char *s, int len);
+
+	friend class Test_game_state;
 };
 
 #endif

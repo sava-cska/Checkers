@@ -21,6 +21,8 @@ public:
   void save_to_file(const std::string &file) const;
 
   friend void XMLCALL endElement(void *userData, const XML_Char *name);
+
+	friend class Test_game;
 };
 
 #endif

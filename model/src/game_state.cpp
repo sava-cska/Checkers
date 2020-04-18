@@ -1,16 +1,6 @@
 #include "game_state.hpp"
 #include <cassert>
 
-board_cell::board_cell(int a, int b) : x(a), y(b) {}
-
-bool board_cell::operator == (board_cell oth) const {
-  return (x == oth.x) && (y == oth.y);
-}
-
-bool board_cell::operator != (board_cell oth) const {
-  return !(*this == oth);
-}
-
 Game_state::Game_state() {
   who_last = SECOND;
   move_to_draw = type_last = 0;
