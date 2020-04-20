@@ -13,19 +13,21 @@ bool operator>(sf::Vector2f a, sf::Vector2f b) {
   return (a.x > b.x) && (a.y > b.y);
 }
 
-void draw_background(std::list<sf::RectangleShape> &rendrer_list) {
+
+
+void Gra::draw_background(std::list<Frame> &rendrer_list) {
   sf::RectangleShape block;
   block.setFillColor(sf::Color(0x62665f));
   block.setSize(sf::Vector2f(1280, 720));
-  rendrer_list.push_back(block);
+  rendrer_list.push_back(Frame(block, 1, {-1, 0}));
 }
 
-void draw_table(std::list<sf::RectangleShape> &rendrer_list, Game_state &game,
+void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
                 sf::Vector2f lu_point, sf::Vector2f rd_point) {
-  std::list<sf::RectangleShape> buffer;
+  std::list<Frame> buffer;
   sf::Vector2f size = rd_point - lu_point;
-  for (size_t i = 0; i < 8; i++) {
-    for (size_t j = 0; j < 8; j++) {
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
       sf::RectangleShape block;
       block.setSize(size / 8);
       block.setPosition(size.x / 8 * j, size.y / 8 * i);
@@ -35,7 +37,7 @@ void draw_table(std::list<sf::RectangleShape> &rendrer_list, Game_state &game,
       } else {
         block.setFillColor(sf::Color::White);
       }
-      rendrer_list.push_back(block);
+      rendrer_list.push_back(Frame(block, 1, {i, j}));
 
       char t = game.get_cell({i, j});
       if (t != '.') {
@@ -56,7 +58,7 @@ void draw_table(std::list<sf::RectangleShape> &rendrer_list, Game_state &game,
           block.setFillColor(sf::Color::Yellow);
           break;
         }
-        buffer.push_back(block);
+        buffer.push_back(Frame(block, 0, {i, j}));
       }
     }
   }
@@ -65,7 +67,7 @@ void draw_table(std::list<sf::RectangleShape> &rendrer_list, Game_state &game,
   }
 }
 
-void draw_possible(std::list<sf::RectangleShape> &render_list,
+void Gra::draw_possible(std::list<Frame> &render_list,
                    Game_state &game_state, board_cell past,
                    sf::Vector2f lu_point, sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
@@ -78,6 +80,54 @@ void draw_possible(std::list<sf::RectangleShape> &render_list,
     block.setPosition(size.x / 8 * a.y, size.y / 8 * a.x);
     block.move(lu_point);
     block.setFillColor(sf::Color::Blue);
-    render_list.push_back(block);
+    render_list.push_back(Frame(block, 0, {0}));
   }
+}
+
+void Gra::drawing() {
+  for (auto &elem : render_list) {
+    window.draw(elem.picture);
+  }
+
+  window.display();
+}
+
+void Gra::update(Game_state& game_state) {
+  render_list.clear();
+  window.clear();
+  pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+  draw_background(render_list);
+  draw_table(render_list, game_state);
+  draw_possible(render_list, game_state, past);
+}
+
+void Gra::compiling_event(Game_state& game_state) {
+  while (window.pollEvent(event)) {
+    if (event.type == sf::Event::Closed) {
+      window.close();
+    }
+
+    if (event.type == sf::Event::MouseButtonPressed)
+      if (event.mouseButton.button == sf::Mouse::Left) {
+
+        auto res = collision(pos);
+
+        int x = res.data[1];
+        int y = res.data[2];
+
+        game_state.move(game_state.who_moves(), past, {y, x});
+        past = {y, x};
+      }
+  }
+} 
+
+Gra::Frame& Gra::collision(sf::Vector2f posi) {
+  Frame* res;
+  for (auto& elem : render_list) {
+    auto pic = elem.picture;
+    if ((pic.getPosition() < posi) && ((pic.getPosition() + pic.getSize()) > pos) && elem.solid) {
+      res = &elem;
+    }
+  }
+  return *res;
 }

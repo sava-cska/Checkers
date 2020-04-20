@@ -4,7 +4,7 @@ LDFLAGS = -lexpat -lsfml-network -lsfml-system -lsfml-window -lsfml-graphics -lp
 INC = -Inetwork -Imodel -Iui
 
 OBJDIR = obj
-MAIN = main_network
+MAIN = main
 
 SRCDIR_MODEL = model
 SRCDIR_NETWORK = network
