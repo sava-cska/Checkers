@@ -22,7 +22,7 @@ private:
     };
 
     std::list<Frame> render_list;
-    sf::Vector2f pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+    sf::Vector2f pos = {0, 0};
     sf::Event event;
 
     board_cell past = {-1, 0};

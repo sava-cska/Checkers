@@ -73,8 +73,6 @@ void Gra::draw_possible(std::list<Frame> &render_list,
   sf::Vector2f size = rd_point - lu_point;
   auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
   for (auto &a : b) {
-    std::cerr << b.size() << ' ' << size.x << size.y << ' ' << a.x
-              << a.y << std::endl;
     sf::RectangleShape block;
     block.setSize(size / 8);
     block.setPosition(size.x / 8 * a.y, size.y / 8 * a.x);
@@ -113,7 +111,7 @@ void Gra::compiling_event(Game_state& game_state) {
         auto res = collision(pos);
 
         int x = res.data[1];
-        int y = res.data[2];
+        int y = res.data[0];
 
         game_state.move(game_state.who_moves(), past, {y, x});
         past = {y, x};
