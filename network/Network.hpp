@@ -6,24 +6,34 @@
 #define CHECKERS_NETWORK_NETWORK_HPP_
 
 #include <SFML/Network.hpp>
-#include <utility>
 #include "game.hpp"
+#include <utility>
+#include <queue>
+#include <string>
+
+namespace controller {
+  class Event;
+}
 
 class Network {
 public:
   Network(int = 24310);
 
+  void update();
   bool setup_server();
-
   bool connect_to_player(const sf::IpAddress &);
-
   bool send_move(const board_cell &, const board_cell &);
 
-  bool get_enemy_move(board_cell &, board_cell &);
+  std::queue<controller::Event *> &get_events();
 
 private:
   const int PORT;
+  bool listening_now;
+  sf::TcpListener listener;
   sf::TcpSocket enemy_socket;
+  std::queue<controller::Event *> events;
+
+private:
 };
 
 #endif // CHECKERS_NETWORK_NETWORK_HPP_
