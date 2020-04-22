@@ -11,6 +11,10 @@ sf::Vector2f operator/(sf::Vector2f, int);
 bool operator<(sf::Vector2f, sf::Vector2f);
 bool operator>(sf::Vector2f, sf::Vector2f);
 
+namespace controller {
+  class IPlayer;
+}
+
 class Gra {
 private:
   class Frame {
@@ -32,7 +36,7 @@ private:
 
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};
-  void update(Game_state &game_state);
+  void update(Game_state &game_state, controller::IPlayer *player);
   void drawing();
   void compiling_event(Game_state &game_state);
   Frame &collision(sf::Vector2f);

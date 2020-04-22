@@ -1,4 +1,5 @@
 #include "draw_smf.hpp"
+#include "Player.hpp"
 
 sf::Vector2f operator/(sf::Vector2f vec, int i) {
   vec.x /= i;
@@ -90,13 +91,15 @@ void Gra::drawing() {
   window.display();
 }
 
-void Gra::update(Game_state& game_state) {
+void Gra::update(Game_state& game_state, controller::IPlayer *player) {
   render_list.clear();
   window.clear();
   pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
   draw_background(render_list);
   draw_table(render_list, game_state);
-  draw_possible(render_list, game_state, past);
+  if (game_state.who_moves() == player->turn) {
+    draw_possible(render_list, game_state, past);
+  }
 }
 
 void Gra::compiling_event(Game_state& game_state) {
