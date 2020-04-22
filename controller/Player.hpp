@@ -7,13 +7,13 @@
 
 #include "game.hpp"
 #include "Network.hpp"
-#include <stack>
+#include <queue>
 
 namespace Controller {
 
 class IPlayer {
 private:
-  std::stack<std::pair<board_cell, board_cell>> moves;
+  std::queue<std::pair<board_cell, board_cell>> moves;
 public:
   number_of_player turn;
 
@@ -28,19 +28,23 @@ public:
   virtual void pop_move();
 };
 
-class Player : IPlayer {
+class Player : public IPlayer {
 private:
   Game_state &game_state;
 public:
-  Player(number_of_player, Game_state &);
+  Player(number_of_player, Game_state);
+  ~Player() override;
+
   bool send_move(const board_cell &, const board_cell &) override;
 };
 
-class NetworkPlayer : IPlayer {
+class NetworkPlayer : public IPlayer {
 private:
   Network &network;
 public:
   NetworkPlayer(number_of_player, Network &);
+  ~NetworkPlayer() override;
+
   bool send_move(const board_cell &, const board_cell &) override;
 };
 
