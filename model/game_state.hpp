@@ -22,7 +22,6 @@ private:
 
   bool check_ordinary(number_of_player player, board_cell from, board_cell to) const;
   bool check_queen(number_of_player player, board_cell from, board_cell to) const;
-  bool check_move(number_of_player player, board_cell from, board_cell to) const;
   bool inside(board_cell cell) const;
   bool kill(number_of_player who, board_cell pos) const;
   board_cell find_kill(number_of_player who) const;
@@ -30,6 +29,7 @@ public:
   Game_state();
 
   number_of_player who_moves() const;
+  bool check_move(number_of_player player, board_cell from, board_cell to) const;
   void move(number_of_player player, board_cell from, board_cell to);
   std::vector<board_cell> get_list_of_correct_moves
               (number_of_player player, board_cell from) const;
@@ -41,7 +41,7 @@ public:
   void save_to_file(std::ofstream &os) const;
   friend void XMLCALL dataElement (void *userData, const XML_Char *s, int len);
 
-	friend class Test_game_state;
+  friend class Test_game_state;
 };
 
 #endif
