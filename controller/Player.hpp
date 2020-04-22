@@ -6,10 +6,11 @@
 #define CHECKERS_CONTROLLER_PLAYER_HPP_
 
 #include "game.hpp"
-#include "Network.hpp"
 #include <queue>
 
-namespace Controller {
+class Network;
+
+namespace controller {
 
 class IPlayer {
 private:

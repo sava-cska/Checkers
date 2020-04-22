@@ -3,8 +3,9 @@
 //
 
 #include "Player.hpp"
+#include "Network.hpp"
 
-using namespace Controller;
+using namespace controller;
 
 IPlayer::IPlayer(number_of_player turn) : turn(turn) {}
 
