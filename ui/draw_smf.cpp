@@ -113,8 +113,12 @@ void Gra::compiling_event(Game_state& game_state) {
         int x = res.data[1];
         int y = res.data[0];
 
-        game_state.move(game_state.who_moves(), past, {y, x});
-        past = {y, x};
+        board_cell next = {y, x};
+
+        if (game_state.check_move(game_state.who_moves(), past, next)) {
+          events.push(new controller::MoveEvent(past, next));
+        }
+        past = next;
       }
   }
 } 
@@ -128,4 +132,8 @@ Gra::Frame& Gra::collision(sf::Vector2f posi) {
     }
   }
   return *res;
+}
+
+std::queue<controller::Event *> &Gra::get_events() {
+  return events;
 }
