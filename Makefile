@@ -22,7 +22,6 @@ all: $(EXE)
 
 $(EXE): model network ui controller $(MAIN)
 	$(CXX) $(OBJECTS_MODEL) $(OBJECTS_NETWORK) $(OBJECTS_UI) $(OBJECTS_CONTROLLER) $(OBJDIR)/$(MAIN).o -o $(EXE) $(LDFLAGS)
-#	g++ $(CXXFLAGS) expat-2.2.9/lib/xmlparse.o expat-2.2.9/lib/xmlrole.o expat-2.2.9/lib/xmltok.o obj/model.o obj/main.o -o model
 
 model: $(OBJDIR) $(OBJECTS_MODEL)
 
