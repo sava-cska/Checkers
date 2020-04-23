@@ -1,4 +1,5 @@
-#pragma once
+#ifndef CHECKERS_UI_DRAW_SMF_HPP_
+#define CHECKERS_UI_DRAW_SMF_HPP_
 
 #include "Event.hpp"
 #include "game.hpp"
@@ -53,3 +54,5 @@ private:
                      sf::Vector2f lu_point = sf::Vector2f(320, 40),
                      sf::Vector2f rd_point = sf::Vector2f(960, 680));
 };
+
+#endif
