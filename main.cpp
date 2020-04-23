@@ -1,66 +1,102 @@
+#include "Event.hpp"
+#include "Network.hpp"
+#include "Player.hpp"
 #include "draw_smf.hpp"
-#include "model.hpp"
+#include "game.hpp"
+
+#include <cassert>
 #include <iostream>
 #include <string>
 
-int main() {
-  Game_state game_state;
-
-  sf::RenderWindow window;
-  window.setFramerateLimit(60);
-  window.create(sf::VideoMode(1280, 720), "Chess");
-
-  std::pair<int, int> past = {0, -1};
-
-  while (window.isOpen()) {
-    sf::Vector2f pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
-    std::list<sf::RectangleShape> rendrer_list;
-
-    sf::Event event;
-
-    window.clear();
-    draw_background(rendrer_list);
-    draw_table(rendrer_list, game_state);
-    draw_possible(rendrer_list, game_state, past);
-
-    while (window.pollEvent(event)) {
-      if (event.type == sf::Event::Closed) {
-        window.close();
-      }
-
-      if (event.type == sf::Event::MouseButtonPressed)
-        if (event.mouseButton.button == sf::Mouse::Left) {
-
-          int count = -1;
-          int count1 = -1;
-          for (auto &elem : rendrer_list) {
-            if ((elem.getPosition() < pos) &&
-                (elem.getPosition() + elem.getSize()) > pos) {
-              count = count1;
-            }
-            count1++;
-            if (count1 > 63)
-              break;
-          }
-
-          int x = count % 8;
-          int y = count / 8;
-
-          std::cerr << past.first << ' ' << past.second << "     " << y << ' '
-                    << x << '\n';
-
-          game_state.move(game_state.who_moves(), past, std::make_pair(y, x));
-
-          past = {y, x};
-        }
-    }
-
-    for (auto &elem : rendrer_list) {
-      window.draw(elem);
-    }
-
-    window.display();
+static void choose_game_mode(controller::IPlayer *&player,
+                             controller::IPlayer *&enemy, Network &network,
+                             std::string &mode) {
+  std::cout << "Game mode (single | server | client)" << std::endl;
+  std::cin >> mode;
+  if (mode == "single") {
+    player = new controller::Player(number_of_player::FIRST);
+    enemy = new controller::Player(number_of_player::SECOND);
+  } else if (mode == "server") {
+    player = new controller::Player(number_of_player::FIRST);
+    enemy = new controller::NetworkPlayer(number_of_player::SECOND, network);
+    network.setup_server();
+  } else if (mode == "client") {
+    std::string ip;
+    std::cout << "Ip address" << std::endl;
+    std::cin >> ip;
+    player = new controller::Player(number_of_player::SECOND);
+    enemy = new controller::NetworkPlayer(number_of_player::FIRST, network);
+    network.connect_to_player(ip);
   }
+} // TODO: make special class for it!
+
+int main() { // TODO: make own main for every game mode
+  Gra core;
+  Network network;
+
+  GameState game_state;
+  controller::IPlayer *player = nullptr;
+  controller::IPlayer *enemy = nullptr;
+
+  std::string mode;
+  choose_game_mode(player, enemy, network, mode);
+
+  assert(player != nullptr);
+  assert(enemy != nullptr);
+
+  while (core.window.isOpen()) {
+    if (mode == "single" && game_state.who_moves() == enemy->turn) {
+      core.update(game_state, enemy);
+    } else {
+      core.update(game_state, player);
+    }
+    core.compiling_event(game_state);
+    network.update();
+
+    while (!core.get_events().empty()) {
+      controller::Event *event = core.get_events().front();
+      controller::MoveEvent *move =
+          dynamic_cast<controller::MoveEvent *>(event);
+      controller::process(move, player, enemy, game_state,
+                          mode); // overloaded in Event.hpp
+
+      // currently, there is only MoveEvent.
+      // TODO: need to process another events!
+      core.get_events().pop();
+    }
+
+    while (!network.get_events().empty()) {
+      controller::Event *event = network.get_events().front();
+      controller::MoveEvent *move =
+          dynamic_cast<controller::MoveEvent *>(event);
+      controller::process(move, enemy, player, game_state,
+                          mode); // overloaded in Event.hpp
+
+      // currently, there is only MoveEvent.
+      // TODO: need to process another events!
+      network.get_events().pop();
+    }
+
+    while (player->check_move()) {
+      auto move = player->get_move();
+      enemy->send_move(move.first, move.second);
+      game_state.move(player->turn, move.first, move.second);
+      player->pop_move();
+    }
+
+    while (enemy->check_move()) {
+      auto move = enemy->get_move();
+      player->send_move(move.first, move.second);
+      game_state.move(enemy->turn, move.first, move.second);
+      std::cerr << "MOVE!\n";
+      enemy->pop_move();
+    }
+
+    core.drawing();
+  }
+
+  delete player;
+  delete enemy;
 
   return 0;
 }
