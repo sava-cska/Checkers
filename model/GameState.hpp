@@ -36,7 +36,7 @@ public:
                   BoardCell to) const;
   void move(number_of_player player, BoardCell from, BoardCell to);
   std::vector<BoardCell> get_list_of_correct_moves(number_of_player player,
-                                                    BoardCell from) const;
+                                                   BoardCell from) const;
   state check_win() const;
   char get_cell(BoardCell cell) const;
 
