@@ -21,7 +21,7 @@ bool GameState::inside(BoardCell cell) const {
 }
 
 bool GameState::check_ordinary(number_of_player player, BoardCell from,
-                                BoardCell to) const {
+                               BoardCell to) const {
   if ((player == SECOND && board[from.x][from.y] == 'w') ||
       (player == FIRST && board[from.x][from.y] == 'b'))
     return false;
@@ -45,7 +45,7 @@ bool GameState::check_ordinary(number_of_player player, BoardCell from,
 }
 
 bool GameState::check_queen(number_of_player player, BoardCell from,
-                             BoardCell to) const {
+                            BoardCell to) const {
   if ((player == SECOND && board[from.x][from.y] == 'W') ||
       (player == FIRST && board[from.x][from.y] == 'B'))
     return false;
@@ -75,7 +75,7 @@ bool GameState::check_queen(number_of_player player, BoardCell from,
 }
 
 bool GameState::check_move(number_of_player player, BoardCell from,
-                            BoardCell to) const {
+                           BoardCell to) const {
   if (!inside(from) || !inside(to))
     return false;
   if (board[from.x][from.y] == '.')
@@ -186,9 +186,8 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
   return;
 }
 
-std::vector<BoardCell>
-GameState::get_list_of_correct_moves(number_of_player player,
-                                      BoardCell from) const {
+std::vector<BoardCell> GameState::get_list_of_correct_moves(number_of_player player,
+                                                            BoardCell from) const {
   std::vector<BoardCell> pos;
   if (who_moves() != player)
     return pos;
