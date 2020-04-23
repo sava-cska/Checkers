@@ -17,16 +17,16 @@ public:
 
 class MoveEvent : public Event {
 public:
-  board_cell from;
-  board_cell to;
+  BoardCell from;
+  BoardCell to;
 
 public:
-  MoveEvent(board_cell, board_cell);
+  MoveEvent(BoardCell, BoardCell);
   ~MoveEvent() override;
 };
 
 bool process(MoveEvent *move, controller::IPlayer *player,
-             controller::IPlayer *enemy, Game_state &game_state,
+             controller::IPlayer *enemy, GameState &game_state,
              const std::string &mode);
 
 } // namespace controller

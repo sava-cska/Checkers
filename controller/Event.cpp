@@ -7,13 +7,13 @@
 
 controller::Event::~Event() {}
 
-controller::MoveEvent::MoveEvent(board_cell from, board_cell to)
+controller::MoveEvent::MoveEvent(BoardCell from, BoardCell to)
     : from(from), to(to) {}
 
 controller::MoveEvent::~MoveEvent() {}
 
 bool controller::process(MoveEvent *move, controller::IPlayer *player,
-                         controller::IPlayer *enemy, Game_state &game_state,
+                         controller::IPlayer *enemy, GameState &game_state,
                          const std::string &mode) {
   std::cerr << "OK!\n";
   if (move != nullptr) {

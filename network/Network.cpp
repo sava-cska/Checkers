@@ -14,7 +14,7 @@ void Network::update() {
   sf::Packet packet;
   //  std::cerr << "no moves from enemy...\n";
   while (enemy_socket.receive(packet) == sf::Socket::Done) {
-    board_cell from, to;
+    BoardCell from, to;
     packet >> from.x >> from.y >> to.x >> to.y;
     std::cerr << "received move\n";
     events.push(new controller::MoveEvent(from, to));
@@ -52,7 +52,7 @@ bool Network::connect_to_player(const sf::IpAddress &ip_address) {
   return true;
 }
 
-bool Network::send_move(const board_cell &from, const board_cell &to) {
+bool Network::send_move(const BoardCell &from, const BoardCell &to) {
   sf::Packet packet;
   packet << from.x << from.y << to.x << to.y;
   std::cerr << "sending move...\n";

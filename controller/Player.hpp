@@ -14,7 +14,7 @@ namespace controller {
 
 class IPlayer {
 private:
-  std::queue<std::pair<board_cell, board_cell>> moves;
+  std::queue<std::pair<BoardCell, BoardCell>> moves;
 
 public:
   number_of_player turn;
@@ -23,22 +23,21 @@ public:
   IPlayer(number_of_player);
   virtual ~IPlayer();
 
-  virtual bool send_move(const board_cell &, const board_cell &) = 0;
-  virtual void add_move(const board_cell &, const board_cell &);
+  virtual bool send_move(const BoardCell &, const BoardCell &) = 0;
+  virtual void add_move(const BoardCell &, const BoardCell &);
   virtual bool check_move() const;
-  virtual std::pair<board_cell, board_cell> get_move() const;
+  virtual std::pair<BoardCell, BoardCell> get_move() const;
   virtual void pop_move();
 };
 
 class Player : public IPlayer {
 private:
-  Game_state &game_state;
 
 public:
-  Player(number_of_player, Game_state);
+  Player(number_of_player);
   ~Player() override;
 
-  bool send_move(const board_cell &, const board_cell &) override;
+  bool send_move(const BoardCell &, const BoardCell &) override;
 };
 
 class NetworkPlayer : public IPlayer {
@@ -49,7 +48,7 @@ public:
   NetworkPlayer(number_of_player, Network &);
   ~NetworkPlayer() override;
 
-  bool send_move(const board_cell &, const board_cell &) override;
+  bool send_move(const BoardCell &, const BoardCell &) override;
 };
 
 } // namespace controller

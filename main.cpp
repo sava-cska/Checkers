@@ -10,21 +10,21 @@
 
 static void choose_game_mode(controller::IPlayer *&player,
                              controller::IPlayer *&enemy, Network &network,
-                             Game_state game_state, std::string &mode) {
+                             std::string &mode) {
   std::cout << "Game mode (single | server | client)" << std::endl;
   std::cin >> mode;
   if (mode == "single") {
-    player = new controller::Player(number_of_player::FIRST, game_state);
-    enemy = new controller::Player(number_of_player::SECOND, game_state);
+    player = new controller::Player(number_of_player::FIRST);
+    enemy = new controller::Player(number_of_player::SECOND);
   } else if (mode == "server") {
-    player = new controller::Player(number_of_player::FIRST, game_state);
+    player = new controller::Player(number_of_player::FIRST);
     enemy = new controller::NetworkPlayer(number_of_player::SECOND, network);
     network.setup_server();
   } else if (mode == "client") {
     std::string ip;
     std::cout << "Ip address" << std::endl;
     std::cin >> ip;
-    player = new controller::Player(number_of_player::SECOND, game_state);
+    player = new controller::Player(number_of_player::SECOND);
     enemy = new controller::NetworkPlayer(number_of_player::FIRST, network);
     network.connect_to_player(ip);
   }
@@ -34,12 +34,12 @@ int main() { // TODO: make own main for every game mode
   Gra core;
   Network network;
 
-  Game_state game_state;
+  GameState game_state;
   controller::IPlayer *player = nullptr;
   controller::IPlayer *enemy = nullptr;
 
   std::string mode;
-  choose_game_mode(player, enemy, network, game_state, mode);
+  choose_game_mode(player, enemy, network, mode);
 
   assert(player != nullptr);
   assert(enemy != nullptr);

@@ -1,10 +1,10 @@
-#include "game_state.hpp"
+#include "GameState.hpp"
 #include <cassert>
 
-Game_state::Game_state() {
+GameState::GameState() {
   who_last = SECOND;
   move_to_draw = type_last = 0;
-  last_move = board_cell(-1, -1);
+  last_move = BoardCell(-1, -1);
 
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
@@ -16,12 +16,12 @@ Game_state::Game_state() {
   return;
 }
 
-bool Game_state::inside(board_cell cell) const {
+bool GameState::inside(BoardCell cell) const {
   return (cell.x >= 0 && cell.x < SIZE && cell.y >= 0 && cell.y < SIZE);
 }
 
-bool Game_state::check_ordinary(number_of_player player, board_cell from,
-                                board_cell to) const {
+bool GameState::check_ordinary(number_of_player player, BoardCell from,
+                                BoardCell to) const {
   if ((player == SECOND && board[from.x][from.y] == 'w') ||
       (player == FIRST && board[from.x][from.y] == 'b'))
     return false;
@@ -32,20 +32,20 @@ bool Game_state::check_ordinary(number_of_player player, board_cell from,
   else
     dx = 1, oth1 = 'W', oth2 = 'w';
 
-  if (to == board_cell(from.x + dx, from.y - 1) ||
-      to == board_cell(from.x + dx, from.y + 1))
+  if (to == BoardCell(from.x + dx, from.y - 1) ||
+      to == BoardCell(from.x + dx, from.y + 1))
     return true;
   for (int dx = -1; dx <= 1; dx += 2)
     for (int dy = -1; dy <= 1; dy += 2)
-      if (to == board_cell(from.x + dx * 2, from.y + dy * 2) &&
+      if (to == BoardCell(from.x + dx * 2, from.y + dy * 2) &&
           (board[from.x + dx][from.y + dy] == oth1 ||
            board[from.x + dx][from.y + dy] == oth2))
         return true;
   return false;
 }
 
-bool Game_state::check_queen(number_of_player player, board_cell from,
-                             board_cell to) const {
+bool GameState::check_queen(number_of_player player, BoardCell from,
+                             BoardCell to) const {
   if ((player == SECOND && board[from.x][from.y] == 'W') ||
       (player == FIRST && board[from.x][from.y] == 'B'))
     return false;
@@ -74,8 +74,8 @@ bool Game_state::check_queen(number_of_player player, board_cell from,
     return false;
 }
 
-bool Game_state::check_move(number_of_player player, board_cell from,
-                            board_cell to) const {
+bool GameState::check_move(number_of_player player, BoardCell from,
+                            BoardCell to) const {
   if (!inside(from) || !inside(to))
     return false;
   if (board[from.x][from.y] == '.')
@@ -89,12 +89,12 @@ bool Game_state::check_move(number_of_player player, board_cell from,
   return check_queen(player, from, to);
 }
 
-bool Game_state::kill(number_of_player who, board_cell pos) const {
+bool GameState::kill(number_of_player who, BoardCell pos) const {
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++) {
-      if (!check_move(who, pos, board_cell(i, j)))
+      if (!check_move(who, pos, BoardCell(i, j)))
         continue;
-      board_cell cur = board_cell(i, j);
+      BoardCell cur = BoardCell(i, j);
       bool fl = false;
       int dy = (i + j == pos.x + pos.y ? -1 : 1);
       while (cur.x != pos.x) {
@@ -111,20 +111,20 @@ bool Game_state::kill(number_of_player who, board_cell pos) const {
   return false;
 }
 
-board_cell Game_state::find_kill(number_of_player who) const {
+BoardCell GameState::find_kill(number_of_player who) const {
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
-      if (kill(who, board_cell(i, j)))
-        return board_cell(i, j);
-  return board_cell(-1, -1);
+      if (kill(who, BoardCell(i, j)))
+        return BoardCell(i, j);
+  return BoardCell(-1, -1);
 }
 
-char Game_state::get_cell(board_cell cell) const {
+char GameState::get_cell(BoardCell cell) const {
   assert(inside(cell));
   return board[cell.x][cell.y];
 }
 
-number_of_player Game_state::who_moves() const {
+number_of_player GameState::who_moves() const {
   if (type_last == 0) {
     if (who_last == FIRST)
       return SECOND;
@@ -141,7 +141,7 @@ number_of_player Game_state::who_moves() const {
   }
 }
 
-void Game_state::move(number_of_player player, board_cell from, board_cell to) {
+void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
   if (who_moves() != player)
     return;
   if (!check_move(player, from, to))
@@ -151,7 +151,7 @@ void Game_state::move(number_of_player player, board_cell from, board_cell to) {
       return;
 
   int dy = (to.x + to.y == from.x + from.y ? -1 : 1);
-  board_cell cop = to;
+  BoardCell cop = to;
   bool die = false;
   while (cop != from) {
     if (board[cop.x][cop.y] != '.')
@@ -169,8 +169,8 @@ void Game_state::move(number_of_player player, board_cell from, board_cell to) {
     type_last = 1;
     last_move = to;
   } else {
-    board_cell pos = find_kill(player);
-    if (pos != board_cell(-1, -1))
+    BoardCell pos = find_kill(player);
+    if (pos != BoardCell(-1, -1))
       board[pos.x][pos.y] = '.';
     std::swap(board[to.x][to.y], board[from.x][from.y]);
     who_last = player;
@@ -186,10 +186,10 @@ void Game_state::move(number_of_player player, board_cell from, board_cell to) {
   return;
 }
 
-std::vector<board_cell>
-Game_state::get_list_of_correct_moves(number_of_player player,
-                                      board_cell from) const {
-  std::vector<board_cell> pos;
+std::vector<BoardCell>
+GameState::get_list_of_correct_moves(number_of_player player,
+                                      BoardCell from) const {
+  std::vector<BoardCell> pos;
   if (who_moves() != player)
     return pos;
   if (player == who_last && from != last_move)
@@ -197,12 +197,12 @@ Game_state::get_list_of_correct_moves(number_of_player player,
 
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
-      if (check_move(player, from, board_cell(i, j)))
-        pos.push_back(board_cell(i, j));
+      if (check_move(player, from, BoardCell(i, j)))
+        pos.push_back(BoardCell(i, j));
   return pos;
 }
 
-state Game_state::check_win() const {
+state GameState::check_win() const {
   if (move_to_draw >= DRAW_MOVE)
     return DRAW;
   number_of_player player = who_moves();
@@ -210,7 +210,7 @@ state Game_state::check_win() const {
     for (int j1 = 0; j1 < SIZE; j1++)
       for (int i2 = 0; i2 < SIZE; i2++)
         for (int j2 = 0; j2 < SIZE; j2++)
-          if (check_move(player, board_cell(i1, j1), board_cell(i2, j2)))
+          if (check_move(player, BoardCell(i1, j1), BoardCell(i2, j2)))
             return GAME;
   if (player == FIRST)
     return SECOND_WIN;
@@ -218,7 +218,7 @@ state Game_state::check_win() const {
     return FIRST_WIN;
 }
 
-bool operator!=(const Game_state &fir, const Game_state &sec) {
+bool operator!=(const GameState &fir, const GameState &sec) {
   if (fir.who_last != sec.who_last)
     return true;
   if (fir.move_to_draw != sec.move_to_draw)
@@ -235,8 +235,8 @@ bool operator!=(const Game_state &fir, const Game_state &sec) {
   return false;
 }
 
-void Game_state::save_to_file(std::ofstream &os) const {
-  os << "<Game_state>\n";
+void GameState::save_to_file(std::ofstream &os) const {
+  os << "<GameState>\n";
 
   os << "\t<board>\n";
   for (int i = 0; i < SIZE; i++) {
@@ -258,6 +258,6 @@ void Game_state::save_to_file(std::ofstream &os) const {
      << "\n\t</finish_cell_last_move>\n";
   os << "\t<move_to_draw>\n\t" << move_to_draw << "\n\t</move_to_draw>\n";
 
-  os << "</Game_state>\n";
+  os << "</GameState>\n";
   return;
 }

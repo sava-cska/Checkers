@@ -33,24 +33,24 @@ private:
   sf::Vector2f pos = {0, 0};
   sf::Event event;
 
-  board_cell past = {-1, 0};
+  BoardCell past = {-1, 0};
 
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};
-  void update(Game_state &game_state, controller::IPlayer *player);
+  void update(GameState &game_state, controller::IPlayer *player);
   void drawing();
-  void compiling_event(Game_state &game_state);
+  void compiling_event(GameState &game_state);
   Frame &collision(sf::Vector2f);
 
   std::queue<controller::Event *> &get_events();
 
 private:
   void draw_background(std::list<Frame> &rendrer_list);
-  void draw_table(std::list<Frame> &rendrer_list, Game_state &,
+  void draw_table(std::list<Frame> &rendrer_list, GameState &,
                   sf::Vector2f lu_point = sf::Vector2f(320, 40),
                   sf::Vector2f rd_point = sf::Vector2f(960, 680));
-  void draw_possible(std::list<Frame> &render_list, Game_state &game_state,
-                     board_cell past,
+  void draw_possible(std::list<Frame> &render_list, GameState &game_state,
+                     BoardCell past,
                      sf::Vector2f lu_point = sf::Vector2f(320, 40),
                      sf::Vector2f rd_point = sf::Vector2f(960, 680));
 };

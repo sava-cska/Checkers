@@ -21,7 +21,7 @@ void Gra::draw_background(std::list<Frame> &rendrer_list) {
   rendrer_list.push_back(Frame(block, 1, {-1, 0}));
 }
 
-void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
+void Gra::draw_table(std::list<Frame> &rendrer_list, GameState &game,
                      sf::Vector2f lu_point, sf::Vector2f rd_point) {
   std::list<Frame> buffer;
   sf::Vector2f size = rd_point - lu_point;
@@ -66,8 +66,8 @@ void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
   }
 }
 
-void Gra::draw_possible(std::list<Frame> &render_list, Game_state &game_state,
-                        board_cell past, sf::Vector2f lu_point,
+void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
+                        BoardCell past, sf::Vector2f lu_point,
                         sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
   auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
@@ -89,7 +89,7 @@ void Gra::drawing() {
   window.display();
 }
 
-void Gra::update(Game_state &game_state, controller::IPlayer *player) {
+void Gra::update(GameState &game_state, controller::IPlayer *player) {
   render_list.clear();
   window.clear();
   pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -100,7 +100,7 @@ void Gra::update(Game_state &game_state, controller::IPlayer *player) {
   }
 }
 
-void Gra::compiling_event(Game_state &game_state) {
+void Gra::compiling_event(GameState &game_state) {
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       window.close();
@@ -114,7 +114,7 @@ void Gra::compiling_event(Game_state &game_state) {
         int x = res.data[1];
         int y = res.data[0];
 
-        board_cell next = {y, x};
+        BoardCell next = {y, x};
 
         if (game_state.check_move(game_state.who_moves(), past, next)) {
           events.push(new controller::MoveEvent(past, next));

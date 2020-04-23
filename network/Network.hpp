@@ -22,7 +22,7 @@ public:
   void update();
   bool setup_server();
   bool connect_to_player(const sf::IpAddress &);
-  bool send_move(const board_cell &, const board_cell &);
+  bool send_move(const BoardCell &, const BoardCell &);
 
   std::queue<controller::Event *> &get_events();
 

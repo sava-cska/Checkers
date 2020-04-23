@@ -2,7 +2,7 @@
 #include <cassert>
 
 Game::Game() {
-  current = Game_state();
+  current = GameState();
   game.push_back(current);
 }
 
@@ -17,16 +17,16 @@ void Game::return_to_state(int number) {
   return;
 }
 
-Game_state Game::watch_state(int number) const {
+GameState Game::watch_state(int number) const {
   if (number < 0 || number >= (int)game.size())
     assert(0);
   return game[number];
 }
 
-Game_state Game::return_current_state() const { return current; }
+GameState Game::return_current_state() const { return current; }
 
-void Game::move(number_of_player player, board_cell from, board_cell to) {
-  Game_state copy = current;
+void Game::move(number_of_player player, BoardCell from, BoardCell to) {
+  GameState copy = current;
   current.move(player, from, to);
   if (current != copy)
     game.push_back(current);
@@ -43,7 +43,7 @@ void Game::save_to_file(const std::string &file) const {
 
 struct helper {
   Game g;
-  Game_state state;
+  GameState state;
   std::string tag;
   int row;
 };
@@ -52,14 +52,14 @@ void XMLCALL startElement(void *userData, const XML_Char *name,
                           const XML_Char **atts) {
   helper *ptr = (helper *)userData;
   ptr->tag = name;
-  if ((std::string)name == "Game_state")
+  if ((std::string)name == "GameState")
     ptr->row = 0;
   return;
 }
 
 void XMLCALL endElement(void *userData, const XML_Char *name) {
   helper *ptr = (helper *)userData;
-  if (ptr->tag == "Game_state")
+  if (ptr->tag == "GameState")
     (ptr->g).game.push_back(ptr->state);
   return;
 }
