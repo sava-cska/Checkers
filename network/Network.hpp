@@ -5,14 +5,14 @@
 #ifndef CHECKERS_NETWORK_NETWORK_HPP_
 #define CHECKERS_NETWORK_NETWORK_HPP_
 
-#include <SFML/Network.hpp>
 #include "game.hpp"
-#include <utility>
+#include <SFML/Network.hpp>
 #include <queue>
 #include <string>
+#include <utility>
 
 namespace controller {
-  class Event;
+class Event;
 }
 
 class Network {

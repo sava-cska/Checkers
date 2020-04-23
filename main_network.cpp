@@ -4,9 +4,9 @@
 #include <iostream>
 #include <string>
 
+#include "Network.hpp"
 #include "draw_smf.hpp"
 #include "game.hpp"
-#include "Network.hpp"
 
 int main(int argc, char **argv) {
   Game_state game_state;
@@ -76,7 +76,8 @@ int main(int argc, char **argv) {
         board_cell enemy_past_cell, enemy_current_cell;
         if (network.get_enemy_move(enemy_past_cell, enemy_current_cell)) {
           std::cerr << "enemy\n";
-          game_state.move(game_state.who_moves(), enemy_past_cell, enemy_current_cell);
+          game_state.move(game_state.who_moves(), enemy_past_cell,
+                          enemy_current_cell);
         }
         past_cell = {0, -1};
       }

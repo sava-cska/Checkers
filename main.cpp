@@ -1,15 +1,16 @@
 #include "Event.hpp"
+#include "Network.hpp"
 #include "Player.hpp"
 #include "draw_smf.hpp"
 #include "game.hpp"
-#include "Network.hpp"
 
+#include <cassert>
 #include <iostream>
 #include <string>
-#include <cassert>
 
 static void choose_game_mode(controller::IPlayer *&player,
-                             controller::IPlayer *&enemy, Network &network, Game_state game_state, std::string &mode) {
+                             controller::IPlayer *&enemy, Network &network,
+                             Game_state game_state, std::string &mode) {
   std::cout << "Game mode (single | server | client)" << std::endl;
   std::cin >> mode;
   if (mode == "single") {

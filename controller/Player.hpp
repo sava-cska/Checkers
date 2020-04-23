@@ -15,6 +15,7 @@ namespace controller {
 class IPlayer {
 private:
   std::queue<std::pair<board_cell, board_cell>> moves;
+
 public:
   number_of_player turn;
 
@@ -32,6 +33,7 @@ public:
 class Player : public IPlayer {
 private:
   Game_state &game_state;
+
 public:
   Player(number_of_player, Game_state);
   ~Player() override;
@@ -42,6 +44,7 @@ public:
 class NetworkPlayer : public IPlayer {
 private:
   Network &network;
+
 public:
   NetworkPlayer(number_of_player, Network &);
   ~NetworkPlayer() override;
@@ -49,6 +52,6 @@ public:
   bool send_move(const board_cell &, const board_cell &) override;
 };
 
-}
+} // namespace controller
 
 #endif // CHECKERS_CONTROLLER_PLAYER_HPP_

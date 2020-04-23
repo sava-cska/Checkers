@@ -3,17 +3,16 @@
 //
 
 #include "Network.hpp"
-#include <iostream>
 #include "Event.hpp"
+#include <iostream>
 
 using std::pair;
 
-Network::Network(int port) : PORT(port), listening_now(0) {
-}
+Network::Network(int port) : PORT(port), listening_now(0) {}
 
 void Network::update() {
   sf::Packet packet;
-//  std::cerr << "no moves from enemy...\n";
+  //  std::cerr << "no moves from enemy...\n";
   while (enemy_socket.receive(packet) == sf::Socket::Done) {
     board_cell from, to;
     packet >> from.x >> from.y >> to.x >> to.y;
@@ -36,7 +35,8 @@ bool Network::setup_server() {
 
   listener.close();
 
-  std::cerr << enemy_socket.getRemoteAddress() << " has successfully connected!\n";
+  std::cerr << enemy_socket.getRemoteAddress()
+            << " has successfully connected!\n";
   enemy_socket.setBlocking(false);
 
   return true;
@@ -64,6 +64,4 @@ bool Network::send_move(const board_cell &from, const board_cell &to) {
   return status == sf::Socket::Done;
 }
 
-std::queue<controller::Event *> &Network::get_events() {
-  return events;
-}
+std::queue<controller::Event *> &Network::get_events() { return events; }

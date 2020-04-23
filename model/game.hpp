@@ -7,6 +7,7 @@ class Game {
 private:
   std::vector<Game_state> game;
   Game_state current;
+
 public:
   Game();
 
@@ -22,7 +23,7 @@ public:
 
   friend void XMLCALL endElement(void *userData, const XML_Char *name);
 
-	friend class Test_game;
+  friend class Test_game;
 };
 
 #endif

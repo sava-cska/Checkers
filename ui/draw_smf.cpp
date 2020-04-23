@@ -14,8 +14,6 @@ bool operator>(sf::Vector2f a, sf::Vector2f b) {
   return (a.x > b.x) && (a.y > b.y);
 }
 
-
-
 void Gra::draw_background(std::list<Frame> &rendrer_list) {
   sf::RectangleShape block;
   block.setFillColor(sf::Color(0x62665f));
@@ -24,7 +22,7 @@ void Gra::draw_background(std::list<Frame> &rendrer_list) {
 }
 
 void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
-                sf::Vector2f lu_point, sf::Vector2f rd_point) {
+                     sf::Vector2f lu_point, sf::Vector2f rd_point) {
   std::list<Frame> buffer;
   sf::Vector2f size = rd_point - lu_point;
   for (int i = 0; i < 8; i++) {
@@ -68,9 +66,9 @@ void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
   }
 }
 
-void Gra::draw_possible(std::list<Frame> &render_list,
-                   Game_state &game_state, board_cell past,
-                   sf::Vector2f lu_point, sf::Vector2f rd_point) {
+void Gra::draw_possible(std::list<Frame> &render_list, Game_state &game_state,
+                        board_cell past, sf::Vector2f lu_point,
+                        sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
   auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
   for (auto &a : b) {
@@ -91,7 +89,7 @@ void Gra::drawing() {
   window.display();
 }
 
-void Gra::update(Game_state& game_state, controller::IPlayer *player) {
+void Gra::update(Game_state &game_state, controller::IPlayer *player) {
   render_list.clear();
   window.clear();
   pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
@@ -102,7 +100,7 @@ void Gra::update(Game_state& game_state, controller::IPlayer *player) {
   }
 }
 
-void Gra::compiling_event(Game_state& game_state) {
+void Gra::compiling_event(Game_state &game_state) {
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       window.close();
@@ -124,19 +122,18 @@ void Gra::compiling_event(Game_state& game_state) {
         past = next;
       }
   }
-} 
+}
 
-Gra::Frame& Gra::collision(sf::Vector2f posi) {
-  Frame* res;
-  for (auto& elem : render_list) {
+Gra::Frame &Gra::collision(sf::Vector2f posi) {
+  Frame *res;
+  for (auto &elem : render_list) {
     auto pic = elem.picture;
-    if ((pic.getPosition() < posi) && ((pic.getPosition() + pic.getSize()) > pos) && elem.solid) {
+    if ((pic.getPosition() < posi) &&
+        ((pic.getPosition() + pic.getSize()) > pos) && elem.solid) {
       res = &elem;
     }
   }
   return *res;
 }
 
-std::queue<controller::Event *> &Gra::get_events() {
-  return events;
-}
+std::queue<controller::Event *> &Gra::get_events() { return events; }

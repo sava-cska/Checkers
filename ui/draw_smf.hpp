@@ -1,18 +1,18 @@
 #pragma once
 
-#include <SFML/Graphics.hpp>
 #include "Event.hpp"
 #include "game.hpp"
+#include <SFML/Graphics.hpp>
+#include <iostream>
 #include <list>
 #include <queue>
-#include <iostream>
 
 sf::Vector2f operator/(sf::Vector2f, int);
 bool operator<(sf::Vector2f, sf::Vector2f);
 bool operator>(sf::Vector2f, sf::Vector2f);
 
 namespace controller {
-  class IPlayer;
+class IPlayer;
 }
 
 class Gra {

@@ -25,8 +25,9 @@ public:
   ~MoveEvent() override;
 };
 
-bool process(MoveEvent *move, controller::IPlayer *player, controller::IPlayer *enemy,
-             Game_state &game_state, const std::string &mode);
+bool process(MoveEvent *move, controller::IPlayer *player,
+             controller::IPlayer *enemy, Game_state &game_state,
+             const std::string &mode);
 
 } // namespace controller
 
