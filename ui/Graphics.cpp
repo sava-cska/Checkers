@@ -1,4 +1,4 @@
-#include "draw_smf.hpp"
+#include "Graphics.hpp"
 #include "Player.hpp"
 
 sf::Vector2f operator/(sf::Vector2f vec, int i) {

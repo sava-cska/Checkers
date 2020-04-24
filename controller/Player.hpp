@@ -1,11 +1,8 @@
-//
-// Created by pospelov on 21.04.2020.
-//
-
 #ifndef CHECKERS_CONTROLLER_PLAYER_HPP_
 #define CHECKERS_CONTROLLER_PLAYER_HPP_
 
-#include "game.hpp"
+#include "Game.hpp"
+
 #include <queue>
 
 class Network;

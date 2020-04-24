@@ -1,8 +1,8 @@
 #include "Event.hpp"
 #include "Network.hpp"
 #include "Player.hpp"
-#include "draw_smf.hpp"
-#include "game.hpp"
+#include "Graphics.hpp"
+#include "Game.hpp"
 
 #include <cassert>
 #include <iostream>

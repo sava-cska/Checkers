@@ -1,7 +1,3 @@
-//
-// Created by pospelov on 21.04.2020.
-//
-
 #include "Event.hpp"
 #include "Player.hpp"
 

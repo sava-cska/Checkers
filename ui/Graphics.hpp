@@ -2,8 +2,9 @@
 #define CHECKERS_UI_DRAW_SMF_HPP_
 
 #include "Event.hpp"
-#include "game.hpp"
+#include "Game.hpp"
 #include <SFML/Graphics.hpp>
+
 #include <iostream>
 #include <list>
 #include <queue>

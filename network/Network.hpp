@@ -1,12 +1,9 @@
-//
-// Created by pospelov on 18.04.2020.
-//
-
 #ifndef CHECKERS_NETWORK_NETWORK_HPP_
 #define CHECKERS_NETWORK_NETWORK_HPP_
 
-#include "game.hpp"
+#include "Game.hpp"
 #include <SFML/Network.hpp>
+
 #include <queue>
 #include <string>
 #include <utility>

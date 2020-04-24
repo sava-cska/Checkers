@@ -1,7 +1,3 @@
-//
-// Created by pospelov on 18.04.2020.
-//
-
 #include "Network.hpp"
 #include "Event.hpp"
 #include <iostream>
