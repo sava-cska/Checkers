@@ -39,6 +39,13 @@ private:
 
   BoardCell past = {-1, 0};
 
+  sf::Texture b;
+  sf::Texture B;
+  sf::Texture w;
+  sf::Texture W;
+
+  std::map<char, sf::Texture*> sprites;
+
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};
   void update(GameState &game_state, controller::IPlayer *player);
@@ -47,6 +54,17 @@ public:
   Frame &collision(sf::Vector2f);
 
   std::queue<controller::Event *> &get_events();
+
+  Gra() {
+    b.loadFromFile("./sprites/b.png");
+    B.loadFromFile("./sprites/B.png");
+    W.loadFromFile("./sprites/W.png");
+    w.loadFromFile("./sprites/w.png");
+    sprites.emplace('b', &b);
+    sprites.emplace('B', &B);
+    sprites.emplace('W', &W);
+    sprites.emplace('w', &w);
+  }
 
 private:
   void draw_background(std::list<Frame> &rendrer_list);

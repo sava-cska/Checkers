@@ -42,23 +42,10 @@ void Gra::draw_table(std::list<Frame> &rendrer_list,
 
       char t = game.get_cell({i, j});
       if (t != '.') {
-        switch (t) {
-        case 'b':
-          block.setFillColor(sf::Color::Red);
-          break;
-
-        case 'w':
-          block.setFillColor(sf::Color::Yellow);
-          break;
-
-        case 'B':
-          block.setFillColor(sf::Color::Red);
-          break;
-
-        case 'W':
-          block.setFillColor(sf::Color::Yellow);
-          break;
-        }
+        //?????????????????????????????????????
+        block.setFillColor(sf::Color::White);
+        //??????????????????????????????????????
+        block.setTexture(sprites[t]);
         buffer.push_back(Frame(block, 0, {i, j}));
       }
     }
