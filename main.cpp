@@ -35,6 +35,7 @@ int main() { // TODO: make own main for every game mode
   Network network;
 
   GameState game_state;
+  Game game_test;
   controller::IPlayer *player = nullptr;
   controller::IPlayer *enemy = nullptr;
 
@@ -50,7 +51,7 @@ int main() { // TODO: make own main for every game mode
     } else {
       core.update(game_state, player);
     }
-    core.compiling_event(game_state);
+    core.compiling_event(game_state, game_test);
     network.update();
 
     while (!core.get_events().empty()) {
