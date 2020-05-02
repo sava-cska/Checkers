@@ -16,6 +16,9 @@ private:
 public:
   number_of_player turn;
 
+  bool enemyGaveUp;
+  bool meGaveUp;
+
 public:
   IPlayer(number_of_player);
   virtual ~IPlayer();

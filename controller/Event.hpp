@@ -25,6 +25,16 @@ bool process(MoveEvent *move, controller::IPlayer *player,
              controller::IPlayer *enemy, GameState &game_state,
              const std::string &mode);
 
+class GiveUpEvent : public Event {
+public:
+  GiveUpEvent() = default;
+  ~GiveUpEvent() override = default;
+};
+
+bool process(GiveUpEvent *giveUp, controller::IPlayer *player,
+             controller::IPlayer *enemy, GameState &game_state,
+             const std::string &mode);
+
 } // namespace controller
 
 #endif // CHECKERS_CONTROLLER_EVENT_HPP_

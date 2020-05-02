@@ -88,6 +88,10 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
       controller::process(move, player, enemy, game_state,
                           mode); // overloaded in Event.hpp
 
+      controller::GiveUpEvent *giveUp =
+          dynamic_cast<controller::GiveUpEvent *>(event);
+      controller::process(giveUp, enemy, player, game_state, mode);
+
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
       core.get_events().pop();
@@ -99,6 +103,10 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
           dynamic_cast<controller::MoveEvent *>(event);
       controller::process(move, enemy, player, game_state,
                           mode); // overloaded in Event.hpp
+
+      controller::GiveUpEvent *giveUp =
+          dynamic_cast<controller::GiveUpEvent *>(event);
+      controller::process(giveUp, enemy, player, game_state, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
@@ -118,6 +126,23 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
       game_state.move(enemy->turn, move.first, move.second);
       std::cerr << "MOVE!\n";
       enemy->pop_move();
+    }
+
+    if ((game_state.check_win() == state::FIRST_WIN && player->turn == FIRST) ||
+        (game_state.check_win() == state::SECOND_WIN && player->turn == SECOND) || player->enemyGaveUp) {
+      std::cerr << "Player has won!\n";
+      break;
+    }
+
+    if ((game_state.check_win() == state::FIRST_WIN && enemy->turn == FIRST) ||
+        (game_state.check_win() == state::SECOND_WIN && enemy->turn == SECOND) || enemy->enemyGaveUp) {
+      std::cerr << "Enemy has won!\n";
+      break;
+    }
+
+    if (game_state.check_win() == state::DRAW) {
+      std::cerr << "Draw!\n";
+      break;
     }
 
     core.drawing();

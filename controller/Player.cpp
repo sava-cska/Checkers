@@ -3,7 +3,7 @@
 
 using namespace controller;
 
-IPlayer::IPlayer(number_of_player turn) : turn(turn) {}
+IPlayer::IPlayer(number_of_player turn) : turn(turn), enemyGaveUp(false), meGaveUp(false) {}
 
 IPlayer::~IPlayer() {}
 
