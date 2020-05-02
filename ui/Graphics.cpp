@@ -1,4 +1,5 @@
-#include "draw_smf.hpp"
+#include "Graphics.hpp"
+#include "Player.hpp"
 
 sf::Vector2f operator/(sf::Vector2f vec, int i) {
   vec.x /= i;
@@ -13,8 +14,6 @@ bool operator>(sf::Vector2f a, sf::Vector2f b) {
   return (a.x > b.x) && (a.y > b.y);
 }
 
-
-
 void Gra::draw_background(std::list<Frame> &rendrer_list) {
   sf::RectangleShape block;
   block.setFillColor(sf::Color(0x62665f));
@@ -22,8 +21,10 @@ void Gra::draw_background(std::list<Frame> &rendrer_list) {
   rendrer_list.push_back(Frame(block, 1, {-1, 0}));
 }
 
-void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
-                sf::Vector2f lu_point, sf::Vector2f rd_point) {
+void Gra::draw_table(std::list<Frame> &rendrer_list,
+                     GameState &game,
+                     sf::Vector2f lu_point,
+                     sf::Vector2f rd_point) {
   std::list<Frame> buffer;
   sf::Vector2f size = rd_point - lu_point;
   for (int i = 0; i < 8; i++) {
@@ -41,23 +42,10 @@ void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
 
       char t = game.get_cell({i, j});
       if (t != '.') {
-        switch (t) {
-        case 'b':
-          block.setFillColor(sf::Color::Red);
-          break;
-
-        case 'w':
-          block.setFillColor(sf::Color::Yellow);
-          break;
-
-        case 'B':
-          block.setFillColor(sf::Color::Red);
-          break;
-
-        case 'W':
-          block.setFillColor(sf::Color::Yellow);
-          break;
-        }
+        //?????????????????????????????????????
+        block.setFillColor(sf::Color::White);
+        //??????????????????????????????????????
+        block.setTexture(sprites[t]);
         buffer.push_back(Frame(block, 0, {i, j}));
       }
     }
@@ -67,9 +55,10 @@ void Gra::draw_table(std::list<Frame> &rendrer_list, Game_state &game,
   }
 }
 
-void Gra::draw_possible(std::list<Frame> &render_list,
-                   Game_state &game_state, board_cell past,
-                   sf::Vector2f lu_point, sf::Vector2f rd_point) {
+void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
+                        BoardCell past,
+                        sf::Vector2f lu_point,
+                        sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
   auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
   for (auto &a : b) {
@@ -78,8 +67,24 @@ void Gra::draw_possible(std::list<Frame> &render_list,
     block.setPosition(size.x / 8 * a.y, size.y / 8 * a.x);
     block.move(lu_point);
     block.setFillColor(sf::Color::Blue);
-    render_list.push_back(Frame(block, 0, {0}));
+    render_list.push_back(Frame(block, 0, {-1, 0}));
   }
+}
+
+void Gra::draw_SafeLoad(std::list<Frame> &render_list,
+                  sf::Vector2f lu_point,
+                  sf::Vector2f rd_point) {
+  sf::Vector2f size = rd_point - lu_point;
+  size.x = size.x / 2;
+  sf::RectangleShape block;
+  block.setSize(size);
+  block.setPosition({0, 0});
+  block.move(lu_point);
+  block.setFillColor(sf::Color::Green);
+  render_list.push_back(Frame(block, 1, {-2, 0}, "./saves/1.xml"));
+  block.move({size.x, 0});
+  block.setFillColor(sf::Color::Red);
+  render_list.push_back(Frame(block, 1, {-2, 1}, "./saves/1.xml"));
 }
 
 void Gra::drawing() {
@@ -90,16 +95,19 @@ void Gra::drawing() {
   window.display();
 }
 
-void Gra::update(Game_state& game_state) {
+void Gra::update(GameState &game_state, controller::IPlayer *player) {
   render_list.clear();
   window.clear();
   pos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
   draw_background(render_list);
   draw_table(render_list, game_state);
-  draw_possible(render_list, game_state, past);
+  if (game_state.who_moves() == player->turn) {
+    draw_possible(render_list, game_state, past);
+  }
+  draw_SafeLoad(render_list);
 }
 
-void Gra::compiling_event(Game_state& game_state) {
+void Gra::compiling_event(GameState &game_state, Game& game) {
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       window.close();
@@ -113,19 +121,34 @@ void Gra::compiling_event(Game_state& game_state) {
         int x = res.data[1];
         int y = res.data[0];
 
-        game_state.move(game_state.who_moves(), past, {y, x});
-        past = {y, x};
+        BoardCell next = {y, x};
+
+        if (game_state.check_move(game_state.who_moves(), past, next)) {
+          events.push(new controller::MoveEvent(past, next));
+        }
+        past = next;
+
+        if(past.x == -2) {
+          if(past.y == 0) {
+            game.load_from_file(res.data2);
+          } else {
+            game.save_to_file(res.data2);
+          }
+        }
       }
   }
-} 
+}
 
-Gra::Frame& Gra::collision(sf::Vector2f posi) {
-  Frame* res;
-  for (auto& elem : render_list) {
+Gra::Frame &Gra::collision(sf::Vector2f posi) {
+  Frame *res;
+  for (auto &elem : render_list) {
     auto pic = elem.picture;
-    if ((pic.getPosition() < posi) && ((pic.getPosition() + pic.getSize()) > pos) && elem.solid) {
+    if ((pic.getPosition() < posi) &&
+        ((pic.getPosition() + pic.getSize()) > pos) && elem.solid) {
       res = &elem;
     }
   }
   return *res;
 }
+
+std::queue<controller::Event *> &Gra::get_events() { return events; }
