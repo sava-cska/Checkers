@@ -26,6 +26,7 @@ private:
                    BoardCell to) const;
   bool inside(BoardCell cell) const;
   bool kill(number_of_player who, BoardCell pos) const;
+  bool is_kill(number_of_player who, BoardCell from, BoardCell to) const;
   BoardCell find_kill(number_of_player who) const;
 
 public:
@@ -39,13 +40,15 @@ public:
                                                    BoardCell from) const;
   state check_win() const;
   char get_cell(BoardCell cell) const;
+  void show() const;
 
   friend bool operator!=(const GameState &fir, const GameState &sec);
 
   void save_to_file(std::ofstream &os) const;
   friend void XMLCALL dataElement(void *userData, const XML_Char *s, int len);
 
-  friend class Test_GameState;
+  friend class TestGameState;
+  friend class CompPlayer;
 };
 
 #endif
