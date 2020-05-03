@@ -1,11 +1,11 @@
-#ifndef _TEST_GAME_STATE_HPP_
-#define _TEST_GAME_STATE_HPP_
+#ifndef _TestGameState_HPP_
+#define _TestGameState_HPP_
 
 #include <cppunit/TestFixture.h>
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/ui/text/TestRunner.h>
 
-class Test_game_state : public CppUnit::TestFixture
+class TestGameState : public CppUnit::TestFixture
 {
 private:
 	void test_init();
@@ -22,7 +22,7 @@ private:
 	void test_get_cell();
 	void test_neq();
 public:
-	CPPUNIT_TEST_SUITE(Test_game_state);
+	CPPUNIT_TEST_SUITE(TestGameState);
 	CPPUNIT_TEST(test_init);
 	CPPUNIT_TEST(test_ordinary);
 	CPPUNIT_TEST(test_queen);
