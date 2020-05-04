@@ -3,12 +3,22 @@
 
 #include "Game.hpp"
 
+#include <SFML/Network.hpp>
+
 namespace controller {
 class IPlayer;
 
+enum EventType { EVENT, MOVE, GIVE_UP };
+
 class Event {
+protected:
+  const EventType type;
+
 public:
-  virtual ~Event();
+  Event(EventType = EventType::EVENT);
+  virtual ~Event() = default;
+
+  virtual sf::Packet pack() const = 0;
 };
 
 class MoveEvent : public Event {
@@ -18,7 +28,10 @@ public:
 
 public:
   MoveEvent(BoardCell, BoardCell);
-  ~MoveEvent() override;
+  MoveEvent(sf::Packet &packet);
+  ~MoveEvent() override = default;
+
+  sf::Packet pack() const override;
 };
 
 bool process(MoveEvent *move, controller::IPlayer *player,
@@ -27,13 +40,18 @@ bool process(MoveEvent *move, controller::IPlayer *player,
 
 class GiveUpEvent : public Event {
 public:
-  GiveUpEvent() = default;
+  GiveUpEvent();
+  GiveUpEvent(sf::Packet &packet);
   ~GiveUpEvent() override = default;
+
+  sf::Packet pack() const override;
 };
 
 bool process(GiveUpEvent *giveUp, controller::IPlayer *player,
              controller::IPlayer *enemy, GameState &game_state,
              const std::string &mode);
+
+Event *unpack(sf::Packet &packet);
 
 } // namespace controller
 

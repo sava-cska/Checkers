@@ -10,10 +10,7 @@ void Network::update() {
   sf::Packet packet;
   //  std::cerr << "no moves from enemy...\n";
   while (enemy_socket.receive(packet) == sf::Socket::Done) {
-    BoardCell from, to;
-    packet >> from.x >> from.y >> to.x >> to.y;
-    std::cerr << "received move\n";
-    events.push(new controller::MoveEvent(from, to));
+    events.push(controller::unpack(packet));
   }
 }
 
@@ -48,15 +45,15 @@ bool Network::connect_to_player(const sf::IpAddress &ip_address) {
   return true;
 }
 
-bool Network::send_move(const BoardCell &from, const BoardCell &to) {
-  sf::Packet packet;
-  packet << from.x << from.y << to.x << to.y;
-  std::cerr << "sending move...\n";
+
+bool Network::send_event(const controller::Event *e) {
+  sf::Packet packet = e->pack();
+  std::cerr << "sending event... \n";
   sf::Socket::Status status = enemy_socket.send(packet);
   while (status == sf::Socket::Partial) {
     status = enemy_socket.send(packet);
   }
-  std::cerr << "move has sent!\n";
+  std::cerr << "Event has been sent\n";
   return status == sf::Socket::Done;
 }
 
