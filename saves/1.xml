@@ -1,0 +1,26 @@
+<Game>
+<GameState>
+	<board>
+	.b.b.b.b
+	b.b.b.b.
+	.b.b.b.b
+	........
+	........
+	w.w.w.w.
+	.w.w.w.w
+	w.w.w.w.
+	</board>
+	<who_move_last>
+	2
+	</who_move_last>
+	<he_kill>
+	0
+	</he_kill>
+	<finish_cell_last_move>
+	-1 -1
+	</finish_cell_last_move>
+	<move_to_draw>
+	0
+	</move_to_draw>
+</GameState>
+</Game>
