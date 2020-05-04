@@ -16,6 +16,9 @@ private:
 public:
   number_of_player turn;
 
+  bool enemyGaveUp;
+  bool meGaveUp;
+
 public:
   IPlayer(number_of_player);
   virtual ~IPlayer();
@@ -25,6 +28,8 @@ public:
   virtual bool check_move() const;
   virtual std::pair<BoardCell, BoardCell> get_move() const;
   virtual void pop_move();
+
+  virtual void enemy_gave_up();
 };
 
 class Player : public IPlayer {
@@ -46,6 +51,8 @@ public:
   ~NetworkPlayer() override;
 
   bool send_move(const BoardCell &, const BoardCell &) override;
+
+  void enemy_gave_up() override;
 };
 
 } // namespace controller

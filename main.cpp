@@ -4,42 +4,71 @@
 #include "Graphics.hpp"
 #include "Game.hpp"
 
+#include "tclap/CmdLine.h"
+
 #include <cassert>
 #include <iostream>
 #include <string>
 
-static void choose_game_mode(controller::IPlayer *&player,
-                             controller::IPlayer *&enemy, Network &network,
-                             std::string &mode) {
-  std::cout << "Game mode (single | server | client)" << std::endl;
-  std::cin >> mode;
-  if (mode == "single") {
-    player = new controller::Player(number_of_player::FIRST);
-    enemy = new controller::Player(number_of_player::SECOND);
-  } else if (mode == "server") {
-    player = new controller::Player(number_of_player::FIRST);
-    enemy = new controller::NetworkPlayer(number_of_player::SECOND, network);
-    network.setup_server();
-  } else if (mode == "client") {
-    std::string ip;
-    std::cout << "Ip address" << std::endl;
-    std::cin >> ip;
-    player = new controller::Player(number_of_player::SECOND);
-    enemy = new controller::NetworkPlayer(number_of_player::FIRST, network);
-    network.connect_to_player(ip);
+static void parse_command_line(int argc, char ** argv, controller::IPlayer *&player,
+                               controller::IPlayer *&enemy, Network &network,
+                               std::string &mode) {
+  try {
+    TCLAP::CmdLine cmd("Simple checkers game", ' ', "0.1");
+    TCLAP::ValueArg<std::string> modeArg("m", "mode", "game mode", true,
+                                         "single", "single|client|server");
+    cmd.add(modeArg);
+
+    TCLAP::ValueArg<std::string> ipArg("i", "ip", "remote ip address", false,
+                                       "localhost", "string");
+    cmd.add(ipArg);
+
+    TCLAP::ValueArg<std::string> playerTurnArg("t", "turn", "player turn",
+                                               false, "first", "first|second");
+    cmd.add(playerTurnArg);
+
+    cmd.parse(argc, argv);
+
+    mode = modeArg.getValue();
+    std::string ip = ipArg.getValue();
+    std::string playerTurn = playerTurnArg.getValue();
+
+    number_of_player myTurn =
+        (playerTurn == "first" ? number_of_player::FIRST
+                               : number_of_player::SECOND);
+    number_of_player enemyTurn =
+        (playerTurn == "first" ? number_of_player::SECOND
+                               : number_of_player::FIRST);
+
+    if (mode == "single") {
+      player = new controller::Player(myTurn);
+      enemy = new controller::Player(enemyTurn);
+    } else if (mode == "server") {
+      player = new controller::Player(myTurn);
+      enemy = new controller::NetworkPlayer(enemyTurn, network);
+      network.setup_server();
+    } else if (mode == "client") {
+      player = new controller::Player(myTurn);
+      enemy = new controller::NetworkPlayer(enemyTurn, network);
+      network.connect_to_player(ip);
+    }
+  } catch (TCLAP::ArgException &e) {
+    std::cerr << "error: " << e.error() << " arg " << e.argId() << std::endl;
   }
 } // TODO: make special class for it!
 
-int main() { // TODO: make own main for every game mode
-  Gra core;
+int main(int argc, char **argv) { // TODO: make own main for every game mode
   Network network;
 
   GameState game_state;
+  Game game_test;
   controller::IPlayer *player = nullptr;
   controller::IPlayer *enemy = nullptr;
 
   std::string mode;
-  choose_game_mode(player, enemy, network, mode);
+  parse_command_line(argc, argv, player, enemy, network, mode);
+
+  Gra core;
 
   assert(player != nullptr);
   assert(enemy != nullptr);
@@ -50,7 +79,7 @@ int main() { // TODO: make own main for every game mode
     } else {
       core.update(game_state, player);
     }
-    core.compiling_event(game_state);
+    core.compiling_event(game_state, game_test);
     network.update();
 
     while (!core.get_events().empty()) {
@@ -59,6 +88,10 @@ int main() { // TODO: make own main for every game mode
           dynamic_cast<controller::MoveEvent *>(event);
       controller::process(move, player, enemy, game_state,
                           mode); // overloaded in Event.hpp
+
+      controller::GiveUpEvent *giveUp =
+          dynamic_cast<controller::GiveUpEvent *>(event);
+      controller::process(giveUp, enemy, player, game_state, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
@@ -71,6 +104,10 @@ int main() { // TODO: make own main for every game mode
           dynamic_cast<controller::MoveEvent *>(event);
       controller::process(move, enemy, player, game_state,
                           mode); // overloaded in Event.hpp
+
+      controller::GiveUpEvent *giveUp =
+          dynamic_cast<controller::GiveUpEvent *>(event);
+      controller::process(giveUp, enemy, player, game_state, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
@@ -90,6 +127,23 @@ int main() { // TODO: make own main for every game mode
       game_state.move(enemy->turn, move.first, move.second);
       std::cerr << "MOVE!\n";
       enemy->pop_move();
+    }
+
+    if ((game_state.check_win() == state::FIRST_WIN && player->turn == FIRST) ||
+        (game_state.check_win() == state::SECOND_WIN && player->turn == SECOND) || player->enemyGaveUp) {
+      std::cerr << "Player has won!\n";
+      break;
+    }
+
+    if ((game_state.check_win() == state::FIRST_WIN && enemy->turn == FIRST) ||
+        (game_state.check_win() == state::SECOND_WIN && enemy->turn == SECOND) || enemy->enemyGaveUp) {
+      std::cerr << "Enemy has won!\n";
+      break;
+    }
+
+    if (game_state.check_win() == state::DRAW) {
+      std::cerr << "Draw!\n";
+      break;
     }
 
     core.drawing();

@@ -1,9 +1,10 @@
 #include "Player.hpp"
 #include "Network.hpp"
+#include "Event.hpp"
 
 using namespace controller;
 
-IPlayer::IPlayer(number_of_player turn) : turn(turn) {}
+IPlayer::IPlayer(number_of_player turn) : turn(turn), enemyGaveUp(false), meGaveUp(false) {}
 
 IPlayer::~IPlayer() {}
 
@@ -18,6 +19,8 @@ std::pair<BoardCell, BoardCell> IPlayer::get_move() const {
 }
 
 void IPlayer::pop_move() { moves.pop(); }
+
+void IPlayer::enemy_gave_up() { enemyGaveUp = true; }
 
 Player::Player(number_of_player turn)
     : IPlayer(turn) {}
@@ -34,5 +37,10 @@ NetworkPlayer::NetworkPlayer(number_of_player turn, Network &network)
 NetworkPlayer::~NetworkPlayer() {}
 
 bool NetworkPlayer::send_move(const BoardCell &from, const BoardCell &to) {
-  return network.send_move(from, to);
+  return network.send_event(new MoveEvent(from, to));
+}
+
+void NetworkPlayer::enemy_gave_up() {
+  enemyGaveUp = true;
+  network.send_event(new GiveUpEvent());
 }

@@ -1,7 +1,7 @@
 CXX = g++
 CXXFLAGS = -std=c++17 -O2 -pedantic -Wall -Wextra
 LDFLAGS = -lexpat -lsfml-network -lsfml-system -lsfml-window -lsfml-graphics -lpthread
-INC = -Inetwork -Imodel -Iui -Icontroller
+INC = -Inetwork -Imodel -Iui -Icontroller -Itclap
 
 OBJDIR = obj
 MAIN = main
