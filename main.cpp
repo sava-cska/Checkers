@@ -17,7 +17,7 @@ static void parse_command_line(int argc, char ** argv, controller::IPlayer *&pla
   try {
     TCLAP::CmdLine cmd("Simple checkers game", ' ', "0.1");
     TCLAP::ValueArg<std::string> modeArg("m", "mode", "game mode", true,
-                                         "single", "single|client|server");
+                                         "single", "single|client|server|ai");
     cmd.add(modeArg);
 
     TCLAP::ValueArg<std::string> ipArg("i", "ip", "remote ip address", false,
