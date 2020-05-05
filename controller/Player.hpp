@@ -34,7 +34,6 @@ public:
 
 class Player : public IPlayer {
 private:
-
 public:
   Player(number_of_player);
   ~Player() override;

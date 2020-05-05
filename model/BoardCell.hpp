@@ -14,12 +14,13 @@ public:
   bool operator!=(BoardCell oth) const;
 };
 
-struct Move
-{
+struct Move {
 public:
-	BoardCell from, to;
+  BoardCell from, to;
+
 public:
-	Move(const BoardCell &cfrom = BoardCell(), const BoardCell &cto = BoardCell());
+  Move(const BoardCell &cfrom = BoardCell(),
+       const BoardCell &cto = BoardCell());
 };
 
 #endif

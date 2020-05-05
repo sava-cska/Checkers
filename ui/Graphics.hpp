@@ -5,10 +5,10 @@
 #include "Game.hpp"
 #include <SFML/Graphics.hpp>
 
+#include <functional>
 #include <iostream>
 #include <list>
 #include <queue>
-#include <functional>
 
 sf::Vector2f operator/(sf::Vector2f, int);
 bool operator<(sf::Vector2f, sf::Vector2f);
@@ -27,7 +27,8 @@ private:
     std::string path;
     std::vector<int> data;
     std::string data2 = "";
-    Frame(sf::RectangleShape ins, bool inb = 0, std::vector<int> ind = {-1, 0}, std::string instr = "")
+    Frame(sf::RectangleShape ins, bool inb = 0, std::vector<int> ind = {-1, 0},
+          std::string instr = "")
         : picture(ins), solid(inb), data(ind), data2(instr) {}
   };
 
@@ -44,7 +45,7 @@ private:
   sf::Texture w;
   sf::Texture W;
 
-  std::map<char, sf::Texture*> sprites;
+  std::map<char, sf::Texture *> sprites;
 
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};

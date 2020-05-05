@@ -4,7 +4,7 @@
 controller::Event::Event(controller::EventType et) : type(et) {}
 
 controller::MoveEvent::MoveEvent(BoardCell from, BoardCell to)
-    : Event(controller::EventType::MOVE), from(from), to(to) { }
+    : Event(controller::EventType::MOVE), from(from), to(to) {}
 
 controller::MoveEvent::MoveEvent(sf::Packet &sf)
     : Event(controller::EventType::MOVE) {
@@ -38,7 +38,8 @@ bool controller::process(MoveEvent *move, controller::IPlayer *player,
   return true;
 }
 
-controller::GiveUpEvent::GiveUpEvent() : Event(controller::EventType::GIVE_UP) {}
+controller::GiveUpEvent::GiveUpEvent()
+    : Event(controller::EventType::GIVE_UP) {}
 
 controller::GiveUpEvent::GiveUpEvent(sf::Packet &packet) {}
 
@@ -49,8 +50,8 @@ sf::Packet controller::GiveUpEvent::pack() const {
 }
 
 bool controller::process(GiveUpEvent *giveUp, controller::IPlayer *player,
-             controller::IPlayer *enemy, GameState &game_state,
-             const std::string &mode) {
+                         controller::IPlayer *enemy, GameState &game_state,
+                         const std::string &mode) {
   if (giveUp == nullptr) {
     return false;
   }
@@ -60,7 +61,7 @@ bool controller::process(GiveUpEvent *giveUp, controller::IPlayer *player,
   return true;
 }
 
-controller::Event* controller::unpack(sf::Packet &packet) {
+controller::Event *controller::unpack(sf::Packet &packet) {
   sf::Int32 type;
   packet >> type;
   controller::EventType eType = static_cast<controller::EventType>(type);

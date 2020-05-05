@@ -21,10 +21,8 @@ void Gra::draw_background(std::list<Frame> &rendrer_list) {
   rendrer_list.push_back(Frame(block, 1, {-1, 0}));
 }
 
-void Gra::draw_table(std::list<Frame> &rendrer_list,
-                     GameState &game,
-                     sf::Vector2f lu_point,
-                     sf::Vector2f rd_point) {
+void Gra::draw_table(std::list<Frame> &rendrer_list, GameState &game,
+                     sf::Vector2f lu_point, sf::Vector2f rd_point) {
   std::list<Frame> buffer;
   sf::Vector2f size = rd_point - lu_point;
   for (int i = 0; i < 8; i++) {
@@ -56,8 +54,7 @@ void Gra::draw_table(std::list<Frame> &rendrer_list,
 }
 
 void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
-                        BoardCell past,
-                        sf::Vector2f lu_point,
+                        BoardCell past, sf::Vector2f lu_point,
                         sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
   auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
@@ -71,9 +68,8 @@ void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
   }
 }
 
-void Gra::draw_SafeLoad(std::list<Frame> &render_list,
-                  sf::Vector2f lu_point,
-                  sf::Vector2f rd_point) {
+void Gra::draw_SafeLoad(std::list<Frame> &render_list, sf::Vector2f lu_point,
+                        sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
   size.x = size.x / 2;
   sf::RectangleShape block;
@@ -107,7 +103,7 @@ void Gra::update(GameState &game_state, controller::IPlayer *player) {
   draw_SafeLoad(render_list);
 }
 
-void Gra::compiling_event(GameState &game_state, Game& game) {
+void Gra::compiling_event(GameState &game_state, Game &game) {
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       window.close();
@@ -128,8 +124,8 @@ void Gra::compiling_event(GameState &game_state, Game& game) {
         }
         past = next;
 
-        if(past.x == -2) {
-          if(past.y == 0) {
+        if (past.x == -2) {
+          if (past.y == 0) {
             game.load_from_file(res.data2);
           } else {
             game.save_to_file(res.data2);

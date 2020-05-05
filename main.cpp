@@ -1,9 +1,9 @@
+#include "CompPlayer.hpp"
 #include "Event.hpp"
+#include "Game.hpp"
+#include "Graphics.hpp"
 #include "Network.hpp"
 #include "Player.hpp"
-#include "Graphics.hpp"
-#include "Game.hpp"
-#include "CompPlayer.hpp"
 
 #include "tclap/CmdLine.h"
 
@@ -11,22 +11,26 @@
 #include <iostream>
 #include <string>
 
-static void parse_command_line(int argc, char ** argv, controller::IPlayer *&player,
+static void parse_command_line(int argc, char **argv,
+                               controller::IPlayer *&player,
                                controller::IPlayer *&enemy, Network &network,
                                std::string &mode) {
   try {
     TCLAP::CmdLine cmd("Simple checkers game", ' ', "0.1");
     TCLAP::ValueArg<std::string> modeArg("m", "mode", "game mode", true,
-                                         "single", "single|client|server|ai", cmd);
+                                         "single", "single|client|server|ai",
+                                         cmd);
 
     TCLAP::ValueArg<std::string> ipArg("i", "ip", "remote ip address", false,
                                        "localhost", "string", cmd);
 
-    TCLAP::ValueArg<std::string> playerTurnArg("t", "turn", "player turn",
-                                               false, "first", "first|second", cmd);
+    TCLAP::ValueArg<std::string> playerTurnArg(
+        "t", "turn", "player turn", false, "first", "first|second", cmd);
 
-    TCLAP::ValueArg<int> secondsArg("s", "seconds", "seconds for AI", false, 2, "integer [1, 10]", cmd);
-    TCLAP::ValueArg<int> deepArg("d", "deep", "deep for A/B algo", false, 3, "integer [1, 10]", cmd);
+    TCLAP::ValueArg<int> secondsArg("s", "seconds", "seconds for AI", false, 2,
+                                    "integer [1, 10]", cmd);
+    TCLAP::ValueArg<int> deepArg("d", "deep", "deep for A/B algo", false, 3,
+                                 "integer [1, 10]", cmd);
 
     cmd.parse(argc, argv);
 
@@ -46,9 +50,9 @@ static void parse_command_line(int argc, char ** argv, controller::IPlayer *&pla
       enemy = new controller::Player(enemyTurn);
     } else if (mode == "ai") {
       player = new controller::Player(myTurn);
-      enemy = new CompPlayer(enemyTurn, secondsArg.getValue(), deepArg.getValue());
-    }
-    else if (mode == "server") {
+      enemy =
+          new CompPlayer(enemyTurn, secondsArg.getValue(), deepArg.getValue());
+    } else if (mode == "server") {
       player = new controller::Player(myTurn);
       enemy = new controller::NetworkPlayer(enemyTurn, network);
       network.setup_server();
@@ -138,13 +142,17 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
     }
 
     if ((game_state.check_win() == state::FIRST_WIN && player->turn == FIRST) ||
-        (game_state.check_win() == state::SECOND_WIN && player->turn == SECOND) || player->enemyGaveUp) {
+        (game_state.check_win() == state::SECOND_WIN &&
+         player->turn == SECOND) ||
+        player->enemyGaveUp) {
       std::cerr << "Player has won!\n";
       break;
     }
 
     if ((game_state.check_win() == state::FIRST_WIN && enemy->turn == FIRST) ||
-        (game_state.check_win() == state::SECOND_WIN && enemy->turn == SECOND) || enemy->enemyGaveUp) {
+        (game_state.check_win() == state::SECOND_WIN &&
+         enemy->turn == SECOND) ||
+        enemy->enemyGaveUp) {
       std::cerr << "Enemy has won!\n";
       break;
     }

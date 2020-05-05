@@ -1,6 +1,6 @@
 #include "GameState.hpp"
-#include <iostream>
 #include <cassert>
+#include <iostream>
 
 GameState::GameState() {
   who_last = SECOND;
@@ -120,10 +120,11 @@ BoardCell GameState::find_kill(number_of_player who) const {
   return BoardCell(-1, -1);
 }
 
-bool GameState::is_kill(number_of_player who, BoardCell from, BoardCell to) const {
+bool GameState::is_kill(number_of_player who, BoardCell from,
+                        BoardCell to) const {
   if (!check_move(who, from, to))
     return false;
-  
+
   bool fl = false;
   int dy = (from.x + from.y == to.x + to.y ? -1 : 1);
   BoardCell cur = to;
@@ -205,8 +206,9 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
   return;
 }
 
-std::vector<BoardCell> GameState::get_list_of_correct_moves(number_of_player player,
-                                                            BoardCell from) const {
+std::vector<BoardCell>
+GameState::get_list_of_correct_moves(number_of_player player,
+                                     BoardCell from) const {
   std::vector<BoardCell> pos;
   if (who_moves() != player)
     return pos;
