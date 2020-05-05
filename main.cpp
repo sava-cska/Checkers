@@ -18,7 +18,7 @@ static void parse_command_line(int argc, char **argv,
   try {
     TCLAP::CmdLine cmd("Simple checkers game", ' ', "0.1");
     TCLAP::ValueArg<std::string> modeArg("m", "mode", "game mode", true,
-                                         "single", "single|client|server|ai",
+                                         "single", "single|client|server|ai|aivsai",
                                          cmd);
 
     TCLAP::ValueArg<std::string> ipArg("i", "ip", "remote ip address", false,
@@ -27,10 +27,16 @@ static void parse_command_line(int argc, char **argv,
     TCLAP::ValueArg<std::string> playerTurnArg(
         "t", "turn", "player turn", false, "first", "first|second", cmd);
 
-    TCLAP::ValueArg<int> secondsArg("s", "seconds", "seconds for AI", false, 2,
+    TCLAP::ValueArg<int> secondsArg1("s", "seconds", "seconds for AI", false, 2,
                                     "integer [1, 10]", cmd);
-    TCLAP::ValueArg<int> deepArg("d", "deep", "deep for A/B algo", false, 3,
+    TCLAP::ValueArg<int> deepArg1("d", "deep", "deep for A/B algo", false, 3,
                                  "integer [1, 10]", cmd);
+
+    TCLAP::ValueArg<int> secondsArg2("S", "Seconds", "seconds for AI-2", false, 2,
+                                     "integer [1, 10]", cmd);
+    TCLAP::ValueArg<int> deepArg2("D", "Deep", "deep for A/B algo-2", false, 3,
+                                  "integer [1, 10]", cmd);
+
 
     cmd.parse(argc, argv);
 
@@ -51,7 +57,7 @@ static void parse_command_line(int argc, char **argv,
     } else if (mode == "ai") {
       player = new controller::Player(myTurn);
       enemy =
-          new CompPlayer(enemyTurn, secondsArg.getValue(), deepArg.getValue());
+          new CompPlayer(enemyTurn, secondsArg1.getValue(), deepArg1.getValue());
     } else if (mode == "server") {
       player = new controller::Player(myTurn);
       enemy = new controller::NetworkPlayer(enemyTurn, network);
@@ -60,6 +66,10 @@ static void parse_command_line(int argc, char **argv,
       player = new controller::Player(myTurn);
       enemy = new controller::NetworkPlayer(enemyTurn, network);
       network.connect_to_player(ip);
+    } else if (mode == "aivsai") {
+      player = new CompPlayer(myTurn, secondsArg1.getValue(), deepArg1.getValue());
+      enemy =
+          new CompPlayer(enemyTurn, secondsArg2.getValue(), deepArg2.getValue());
     }
   } catch (TCLAP::ArgException &e) {
     std::cerr << "error: " << e.error() << " arg " << e.argId() << std::endl;
