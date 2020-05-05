@@ -12,7 +12,7 @@ void IPlayer::add_move(const BoardCell &from, const BoardCell &to) {
   moves.push({from, to});
 }
 
-bool IPlayer::check_move() const { return !moves.empty(); }
+bool IPlayer::check_move() { return !moves.empty(); }
 
 std::pair<BoardCell, BoardCell> IPlayer::get_move() const {
   return moves.front();

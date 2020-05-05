@@ -11,7 +11,7 @@ namespace controller {
 
 class IPlayer {
 private:
-  std::queue<std::pair<BoardCell, BoardCell>> moves;
+  mutable std::queue<std::pair<BoardCell, BoardCell>> moves;
 
 public:
   number_of_player turn;
@@ -25,7 +25,7 @@ public:
 
   virtual bool send_move(const BoardCell &, const BoardCell &) = 0;
   virtual void add_move(const BoardCell &, const BoardCell &);
-  virtual bool check_move() const;
+  virtual bool check_move();
   virtual std::pair<BoardCell, BoardCell> get_move() const;
   virtual void pop_move();
 

@@ -3,6 +3,7 @@
 #include "Player.hpp"
 #include "Graphics.hpp"
 #include "Game.hpp"
+#include "CompPlayer.hpp"
 
 #include "tclap/CmdLine.h"
 
@@ -43,7 +44,11 @@ static void parse_command_line(int argc, char ** argv, controller::IPlayer *&pla
     if (mode == "single") {
       player = new controller::Player(myTurn);
       enemy = new controller::Player(enemyTurn);
-    } else if (mode == "server") {
+    } else if (mode == "ai") {
+      player = new controller::Player(myTurn);
+      enemy = new CompPlayer(enemyTurn, 1, 5);
+    }
+    else if (mode == "server") {
       player = new controller::Player(myTurn);
       enemy = new controller::NetworkPlayer(enemyTurn, network);
       network.setup_server();
@@ -67,6 +72,9 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
 
   std::string mode;
   parse_command_line(argc, argv, player, enemy, network, mode);
+  if (mode == "ai") {
+    dynamic_cast<CompPlayer *>(enemy)->set_game_state(game_state);
+  }
 
   Gra core;
 

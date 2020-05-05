@@ -3,6 +3,35 @@
 
 static const int INF = (int) 1e9;
 
+CompPlayer::CompPlayer(number_of_player turn, int seconds, int deep)
+  : controller::IPlayer(turn), seconds_(seconds), deep_(deep) {}
+
+CompPlayer::~CompPlayer() {}
+
+void CompPlayer::set_game_state(const GameState &gs_) {
+  gs = gs_;
+}
+
+bool CompPlayer::check_move() {
+  if (IPlayer::check_move()) {
+    return true;
+  }
+  if (gs.who_moves() == turn) {
+    auto move = get_next_move(gs, 3, 10);
+    gs.move(turn, move.from, move.to);
+    add_move(move.from, move.to);
+  }
+  return gs.who_moves() == turn;
+}
+
+bool CompPlayer::send_move(const BoardCell &from, const BoardCell &to) {
+  if (gs.who_moves() != turn) {
+    gs.move(gs.who_moves(), from, to);
+    return true;
+  }
+  return false;
+}
+
 int CompPlayer::score(GameState G) const
 {
 	int ordw = 0, ordb = 0, queenw = 0, queenb = 0, killw = 0, killb = 0;
@@ -23,7 +52,7 @@ int CompPlayer::score(GameState G) const
 }
 
 std::pair <int, Move> CompPlayer::alpha_beta(GameState G, int alpha, int beta,
-					clock_t start_time, int seconds, int deep, std::mt19937 gen)
+					clock_t start_time, int seconds, int deep, std::mt19937 gen) const
 {
 	state current = G.check_win();
 	if (current != GAME)
@@ -113,7 +142,7 @@ std::pair <int, Move> CompPlayer::alpha_beta(GameState G, int alpha, int beta,
 	return std::make_pair(current_score, best_move);
 }
 
-Move CompPlayer::get_next_move(GameState G, int seconds, int deep)
+Move CompPlayer::get_next_move(GameState G, int seconds, int deep) const
 {
 	std::mt19937 gen(time(0));
 	clock_t start = clock();
