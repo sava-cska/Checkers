@@ -16,12 +16,13 @@ bool CompPlayer::check_move() {
   if (IPlayer::check_move()) {
     return true;
   }
-  if (gs.who_moves() == turn) {
-    auto move = get_next_move(gs, 3, 10);
+  if (gs.who_moves() == turn && gs.check_win() == state::GAME) {
+    auto move = get_next_move(gs, seconds_, deep_);
     gs.move(turn, move.from, move.to);
     add_move(move.from, move.to);
+    return true;
   }
-  return gs.who_moves() == turn;
+  return false;
 }
 
 bool CompPlayer::send_move(const BoardCell &from, const BoardCell &to) {

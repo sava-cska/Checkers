@@ -17,16 +17,16 @@ static void parse_command_line(int argc, char ** argv, controller::IPlayer *&pla
   try {
     TCLAP::CmdLine cmd("Simple checkers game", ' ', "0.1");
     TCLAP::ValueArg<std::string> modeArg("m", "mode", "game mode", true,
-                                         "single", "single|client|server|ai");
-    cmd.add(modeArg);
+                                         "single", "single|client|server|ai", cmd);
 
     TCLAP::ValueArg<std::string> ipArg("i", "ip", "remote ip address", false,
-                                       "localhost", "string");
-    cmd.add(ipArg);
+                                       "localhost", "string", cmd);
 
     TCLAP::ValueArg<std::string> playerTurnArg("t", "turn", "player turn",
-                                               false, "first", "first|second");
-    cmd.add(playerTurnArg);
+                                               false, "first", "first|second", cmd);
+
+    TCLAP::ValueArg<int> secondsArg("s", "seconds", "seconds for AI", false, 2, "integer [1, 10]", cmd);
+    TCLAP::ValueArg<int> deepArg("d", "deep", "deep for A/B algo", false, 3, "integer [1, 10]", cmd);
 
     cmd.parse(argc, argv);
 
@@ -46,7 +46,7 @@ static void parse_command_line(int argc, char ** argv, controller::IPlayer *&pla
       enemy = new controller::Player(enemyTurn);
     } else if (mode == "ai") {
       player = new controller::Player(myTurn);
-      enemy = new CompPlayer(enemyTurn, 1, 5);
+      enemy = new CompPlayer(enemyTurn, secondsArg.getValue(), deepArg.getValue());
     }
     else if (mode == "server") {
       player = new controller::Player(myTurn);
