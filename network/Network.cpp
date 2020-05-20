@@ -45,8 +45,8 @@ bool Network::connect_to_player(const sf::IpAddress &ip_address) {
   return true;
 }
 
-bool Network::send_event(const controller::Event *e) {
-  sf::Packet packet = e->pack();
+bool Network::send_event(const controller::Event &e) {
+  sf::Packet packet = e.pack();
   std::cerr << "sending event... \n";
   sf::Socket::Status status = enemy_socket.send(packet);
   while (status == sf::Socket::Partial) {

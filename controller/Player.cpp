@@ -37,10 +37,10 @@ NetworkPlayer::NetworkPlayer(number_of_player turn, Network &network)
 NetworkPlayer::~NetworkPlayer() {}
 
 bool NetworkPlayer::send_move(const BoardCell &from, const BoardCell &to) {
-  return network.send_event(new MoveEvent(from, to));
+  return network.send_event(MoveEvent(from, to));
 }
 
 void NetworkPlayer::enemy_gave_up() {
   enemyGaveUp = true;
-  network.send_event(new GiveUpEvent());
+  network.send_event(GiveUpEvent());
 }
