@@ -136,7 +136,7 @@ void Gra::compiling_event(GameState &game_state, Game &game) {
 }
 
 Gra::Frame &Gra::collision(sf::Vector2f posi) {
-  Frame *res;
+  Frame *res = 0;
   for (auto &elem : render_list) {
     auto pic = elem.picture;
     if ((pic.getPosition() < posi) &&

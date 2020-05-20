@@ -1,5 +1,5 @@
 CXX = g++
-CXXFLAGS = -std=c++17 -O2 -pedantic -Wall -Wextra
+CXXFLAGS = -std=c++17 -O2 -pedantic -Wall -Wextra -Werror
 LDFLAGS = -lexpat -lsfml-network -lsfml-system -lsfml-window -lsfml-graphics -lpthread
 INC = -Inetwork -Imodel -Iui -Icontroller
 

@@ -50,6 +50,7 @@ struct helper {
 
 void XMLCALL startElement(void *userData, const XML_Char *name,
                           const XML_Char **atts) {
+  (void)atts;
   helper *ptr = (helper *)userData;
   ptr->tag = name;
   if ((std::string)name == "GameState")
@@ -58,6 +59,7 @@ void XMLCALL startElement(void *userData, const XML_Char *name,
 }
 
 void XMLCALL endElement(void *userData, const XML_Char *name) {
+  (void)name;
   helper *ptr = (helper *)userData;
   if (ptr->tag == "GameState")
     (ptr->g).game.push_back(ptr->state);

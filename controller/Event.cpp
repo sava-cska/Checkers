@@ -41,7 +41,7 @@ bool controller::process(MoveEvent *move, controller::IPlayer *player,
 controller::GiveUpEvent::GiveUpEvent()
     : Event(controller::EventType::GIVE_UP) {}
 
-controller::GiveUpEvent::GiveUpEvent(sf::Packet &packet) {}
+controller::GiveUpEvent::GiveUpEvent(sf::Packet &packet) {(void)packet;}
 
 sf::Packet controller::GiveUpEvent::pack() const {
   sf::Packet packet;
@@ -52,6 +52,8 @@ sf::Packet controller::GiveUpEvent::pack() const {
 bool controller::process(GiveUpEvent *giveUp, controller::IPlayer *player,
                          controller::IPlayer *enemy, GameState &game_state,
                          const std::string &mode) {
+  (void)mode;
+  (void)game_state;
   if (giveUp == nullptr) {
     return false;
   }
@@ -72,6 +74,8 @@ controller::Event *controller::unpack(sf::Packet &packet) {
     break;
   case controller::EventType::GIVE_UP:
     e = new controller::GiveUpEvent(packet);
+    break;
+  default:
     break;
   }
   return e;

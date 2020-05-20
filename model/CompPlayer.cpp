@@ -1,5 +1,6 @@
 #include "CompPlayer.hpp"
 #include <algorithm>
+#include <iostream>
 
 static const int INF = (int)1e9;
 
@@ -50,8 +51,7 @@ int CompPlayer::score(GameState G) const {
           G.kill(SECOND, BoardCell(i, j)))
         killb++;
     }
-  return ordw - ordb + queenw * queenw * queenw - queenb * queenb * queenb +
-         killw * killw - killb * killb;
+  return ordw - ordb + (2 * queenw + 5) * (2 * queenw + 5) * (2 * queenw + 5) - (2 * queenb + 5) * (2 * queenb + 5) * (2 * queenb + 5) + (killw + 7) * (killw + 7) - (killb + 7) * (killb + 7);
 }
 
 std::pair<int, Move> CompPlayer::alpha_beta(GameState G, int alpha, int beta,
@@ -93,7 +93,7 @@ std::pair<int, Move> CompPlayer::alpha_beta(GameState G, int alpha, int beta,
     GameState cop = G;
     cop.move(player, kill[i].from, kill[i].to);
     std::pair<int, Move> result =
-        alpha_beta(cop, alpha, beta, start_time, seconds, deep - 1, gen);
+        alpha_beta(cop, alpha, beta, start_time, seconds, deep, gen);
     if (player == FIRST) {
       if (result.first >= current_score) {
         best_move = kill[i];
@@ -143,5 +143,6 @@ Move CompPlayer::get_next_move(GameState G, int seconds, int deep) const {
   clock_t start = clock();
   std::pair<int, Move> result =
       alpha_beta(G, -INF, INF, start, seconds, deep, gen);
+  std::cout << result.first << '\n';
   return result.second;
 }

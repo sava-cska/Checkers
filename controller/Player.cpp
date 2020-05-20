@@ -28,6 +28,8 @@ Player::Player(number_of_player turn) : IPlayer(turn) {}
 Player::~Player() {}
 
 bool Player::send_move(const BoardCell &from, const BoardCell &to) {
+  (void)from;
+  (void)to;
   return true;
 }
 
