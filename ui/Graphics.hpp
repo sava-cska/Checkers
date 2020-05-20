@@ -5,6 +5,7 @@
 #include "Game.hpp"
 #include <SFML/Graphics.hpp>
 
+#include <functional>
 #include <iostream>
 #include <list>
 #include <queue>
@@ -23,9 +24,12 @@ private:
   public:
     sf::RectangleShape picture;
     bool solid;
+    std::string path;
     std::vector<int> data;
-    Frame(sf::RectangleShape ins, bool inb = 0, std::vector<int> ind = {})
-        : picture(ins), solid(inb), data(ind) {}
+    std::string data2 = "";
+    Frame(sf::RectangleShape ins, bool inb = 0, std::vector<int> ind = {-1, 0},
+          std::string instr = "")
+        : picture(ins), solid(inb), data(ind), data2(instr) {}
   };
 
   std::queue<controller::Event *> events;
@@ -36,14 +40,32 @@ private:
 
   BoardCell past = {-1, 0};
 
+  sf::Texture b;
+  sf::Texture B;
+  sf::Texture w;
+  sf::Texture W;
+
+  std::map<char, sf::Texture *> sprites;
+
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};
   void update(GameState &game_state, controller::IPlayer *player);
   void drawing();
-  void compiling_event(GameState &game_state);
+  void compiling_event(GameState &game_state, Game &game);
   Frame &collision(sf::Vector2f);
 
   std::queue<controller::Event *> &get_events();
+
+  Gra() {
+    b.loadFromFile("./sprites/b.png");
+    B.loadFromFile("./sprites/B.png");
+    W.loadFromFile("./sprites/W.png");
+    w.loadFromFile("./sprites/w.png");
+    sprites.emplace('b', &b);
+    sprites.emplace('B', &B);
+    sprites.emplace('W', &W);
+    sprites.emplace('w', &w);
+  }
 
 private:
   void draw_background(std::list<Frame> &rendrer_list);
@@ -54,6 +76,9 @@ private:
                      BoardCell past,
                      sf::Vector2f lu_point = sf::Vector2f(320, 40),
                      sf::Vector2f rd_point = sf::Vector2f(960, 680));
+  void draw_SafeLoad(std::list<Frame> &render_list,
+                     sf::Vector2f lu_point = sf::Vector2f(40, 40),
+                     sf::Vector2f rd_point = sf::Vector2f(280, 120));
 };
 
 #endif

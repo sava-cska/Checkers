@@ -40,23 +40,10 @@ void Gra::draw_table(std::list<Frame> &rendrer_list, GameState &game,
 
       char t = game.get_cell({i, j});
       if (t != '.') {
-        switch (t) {
-        case 'b':
-          block.setFillColor(sf::Color::Red);
-          break;
-
-        case 'w':
-          block.setFillColor(sf::Color::Yellow);
-          break;
-
-        case 'B':
-          block.setFillColor(sf::Color::Red);
-          break;
-
-        case 'W':
-          block.setFillColor(sf::Color::Yellow);
-          break;
-        }
+        //?????????????????????????????????????
+        block.setFillColor(sf::Color::White);
+        //??????????????????????????????????????
+        block.setTexture(sprites[t]);
         buffer.push_back(Frame(block, 0, {i, j}));
       }
     }
@@ -77,8 +64,23 @@ void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
     block.setPosition(size.x / 8 * a.y, size.y / 8 * a.x);
     block.move(lu_point);
     block.setFillColor(sf::Color::Blue);
-    render_list.push_back(Frame(block, 0, {0}));
+    render_list.push_back(Frame(block, 0, {-1, 0}));
   }
+}
+
+void Gra::draw_SafeLoad(std::list<Frame> &render_list, sf::Vector2f lu_point,
+                        sf::Vector2f rd_point) {
+  sf::Vector2f size = rd_point - lu_point;
+  size.x = size.x / 2;
+  sf::RectangleShape block;
+  block.setSize(size);
+  block.setPosition({0, 0});
+  block.move(lu_point);
+  block.setFillColor(sf::Color::Green);
+  render_list.push_back(Frame(block, 1, {-2, 0}, "./saves/1.xml"));
+  block.move({size.x, 0});
+  block.setFillColor(sf::Color::Red);
+  render_list.push_back(Frame(block, 1, {-2, 1}, "./saves/1.xml"));
 }
 
 void Gra::drawing() {
@@ -98,9 +100,10 @@ void Gra::update(GameState &game_state, controller::IPlayer *player) {
   if (game_state.who_moves() == player->turn) {
     draw_possible(render_list, game_state, past);
   }
+  draw_SafeLoad(render_list);
 }
 
-void Gra::compiling_event(GameState &game_state) {
+void Gra::compiling_event(GameState &game_state, Game &game) {
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       window.close();
@@ -120,6 +123,14 @@ void Gra::compiling_event(GameState &game_state) {
           events.push(new controller::MoveEvent(past, next));
         }
         past = next;
+
+        if (past.x == -2) {
+          if (past.y == 0) {
+            game.load_from_file(res.data2);
+          } else {
+            game.save_to_file(res.data2);
+          }
+        }
       }
   }
 }

@@ -1,5 +1,5 @@
-#ifndef _GAME_HPP_
-#define _GAME_HPP_
+#ifndef _Game_HPP_
+#define _Game_HPP_
 
 #include "GameState.hpp"
 
@@ -23,7 +23,7 @@ public:
 
   friend void XMLCALL endElement(void *userData, const XML_Char *name);
 
-  friend class Test_game;
+  friend class TestGame;
 };
 
 #endif
