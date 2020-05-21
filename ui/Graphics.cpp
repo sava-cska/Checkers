@@ -105,6 +105,14 @@ void Gra::update(Game &game, controller::IPlayer *player) {
 }
 
 void Gra::compiling_event(Game &game) {
+
+  if(update_checker != game.number_of_states()) {
+    update_checker = game.number_of_states();
+    number_of_showing_state = game.number_of_states() - 1;
+    possition_of_scroll = 0.9;
+  }
+
+
   while (window.pollEvent(event)) {
     if (event.type == sf::Event::Closed) {
       window.close();
@@ -122,8 +130,6 @@ void Gra::compiling_event(Game &game) {
 
         if (game.return_current_state().check_move(game.return_current_state().who_moves(), past, next)) {
           events.push(new controller::MoveEvent(past, next));
-          number_of_showing_state = game.number_of_states();
-          possition_of_scroll = 0.9;
         }
         past = next;
 

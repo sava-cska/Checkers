@@ -51,6 +51,8 @@ private:
 
   std::map<char, sf::Texture *> sprites;
 
+  int update_checker = 0;
+
   float possition_of_scroll = 0; // [0, 0.9]
   bool press_the_scroll = 0;
 
