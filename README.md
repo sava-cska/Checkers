@@ -9,6 +9,9 @@ Project from our (with sergeypospelov and Yurafobus1) team at spring 2020.
 
 `sudo apt-get install libcppunit-dev`
 
+Для установки библиотеки tclap надо в командной строке ввести:
+`sudo apt-get install libtclap-dev`
+
 install SFML
 
 `sudo apt-get install libsfml-dev`
