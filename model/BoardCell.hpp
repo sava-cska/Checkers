@@ -9,7 +9,7 @@ public:
 
 public:
   BoardCell(int a = 0, int b = 0);
-  BoardCell(const BoardCell &cell);
+  BoardCell(const BoardCell &cell) = default;
   bool operator==(BoardCell oth) const;
   bool operator!=(BoardCell oth) const;
 };
