@@ -14,7 +14,7 @@ public:
   int number_of_states() const;
   void return_to_state(int number);
   GameState watch_state(int number) const;
-  GameState return_current_state() const;
+  GameState& return_current_state();
 
   void move(number_of_player player, BoardCell from, BoardCell to);
 

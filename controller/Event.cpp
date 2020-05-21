@@ -18,20 +18,20 @@ sf::Packet controller::MoveEvent::pack() const {
 }
 
 bool controller::process(MoveEvent *move, controller::IPlayer *player,
-                         controller::IPlayer *enemy, GameState &game_state,
+                         controller::IPlayer *enemy, Game &game,
                          const std::string &mode) {
   if (move == nullptr) {
     return false;
   }
 
   if (mode == "single") {
-    if (game_state.who_moves() == player->turn) {
+    if (game.return_current_state().who_moves() == player->turn) {
       player->add_move(move->from, move->to);
     } else {
       enemy->add_move(move->from, move->to);
     }
   } else {
-    if (game_state.who_moves() == player->turn) {
+    if (game.return_current_state().who_moves() == player->turn) {
       player->add_move(move->from, move->to);
     }
   }
@@ -50,10 +50,10 @@ sf::Packet controller::GiveUpEvent::pack() const {
 }
 
 bool controller::process(GiveUpEvent *giveUp, controller::IPlayer *player,
-                         controller::IPlayer *enemy, GameState &game_state,
+                         controller::IPlayer *enemy, Game &game,
                          const std::string &mode) {
   (void)mode;
-  (void)game_state;
+  (void)game;
   if (giveUp == nullptr) {
     return false;
   }

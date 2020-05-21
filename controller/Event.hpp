@@ -35,7 +35,7 @@ public:
 };
 
 bool process(MoveEvent *move, controller::IPlayer *player,
-             controller::IPlayer *enemy, GameState &game_state,
+             controller::IPlayer *enemy, Game &game,
              const std::string &mode);
 
 class GiveUpEvent : public Event {
@@ -48,7 +48,7 @@ public:
 };
 
 bool process(GiveUpEvent *giveUp, controller::IPlayer *player,
-             controller::IPlayer *enemy, GameState &game_state,
+             controller::IPlayer *enemy, Game &game,
              const std::string &mode);
 
 Event *unpack(sf::Packet &packet);

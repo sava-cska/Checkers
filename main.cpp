@@ -79,8 +79,8 @@ static void parse_command_line(int argc, char **argv,
 int main(int argc, char **argv) { // TODO: make own main for every game mode
   Network network;
 
-  GameState game_state;
   Game game_test;
+  GameState& game_state = game_test.return_current_state();
   controller::IPlayer *player = nullptr;
   controller::IPlayer *enemy = nullptr;
 
@@ -97,23 +97,25 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
 
   while (core.window.isOpen()) {
     if (mode == "single" && game_state.who_moves() == enemy->turn) {
-      core.update(game_state, enemy);
+      core.update(game_test, enemy);
     } else {
-      core.update(game_state, player);
+      core.update(game_test, player);
     }
-    core.compiling_event(game_state, game_test);
+    core.compiling_event(game_test);
     network.update();
+
+    game_state = game_test.return_current_state();
 
     while (!core.get_events().empty()) {
       controller::Event *event = core.get_events().front();
       controller::MoveEvent *move =
           dynamic_cast<controller::MoveEvent *>(event);
-      controller::process(move, player, enemy, game_state,
+      controller::process(move, player, enemy, game_test,
                           mode); // overloaded in Event.hpp
 
       controller::GiveUpEvent *giveUp =
           dynamic_cast<controller::GiveUpEvent *>(event);
-      controller::process(giveUp, enemy, player, game_state, mode);
+      controller::process(giveUp, enemy, player, game_test, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
@@ -124,12 +126,12 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
       controller::Event *event = network.get_events().front();
       controller::MoveEvent *move =
           dynamic_cast<controller::MoveEvent *>(event);
-      controller::process(move, enemy, player, game_state,
+      controller::process(move, enemy, player, game_test,
                           mode); // overloaded in Event.hpp
 
       controller::GiveUpEvent *giveUp =
           dynamic_cast<controller::GiveUpEvent *>(event);
-      controller::process(giveUp, enemy, player, game_state, mode);
+      controller::process(giveUp, enemy, player, game_test, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
@@ -139,14 +141,14 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
     while (player->check_move()) {
       auto move = player->get_move();
       enemy->send_move(move.first, move.second);
-      game_state.move(player->turn, move.first, move.second);
+      game_test.move(player->turn, move.first, move.second);
       player->pop_move();
     }
 
     while (enemy->check_move()) {
       auto move = enemy->get_move();
       player->send_move(move.first, move.second);
-      game_state.move(enemy->turn, move.first, move.second);
+      game_test.move(enemy->turn, move.first, move.second);
       std::cerr << "MOVE!\n";
       enemy->pop_move();
     }

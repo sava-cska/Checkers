@@ -32,6 +32,8 @@ private:
         : picture(ins), solid(inb), data(ind), data2(instr) {}
   };
 
+  
+
   std::queue<controller::Event *> events;
 
   std::list<Frame> render_list;
@@ -45,33 +47,36 @@ private:
   sf::Texture w;
   sf::Texture W;
 
+  int number_of_showing_state = 0;
+
   std::map<char, sf::Texture *> sprites;
+
+  float possition_of_scroll = 0; // [0, 0.9]
+  bool press_the_scroll = 0;
 
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};
-  void update(GameState &game_state, controller::IPlayer *player);
+  void update(Game &game, controller::IPlayer *player);
   void drawing();
-  void compiling_event(GameState &game_state, Game &game);
+  void compiling_event(Game &game);
   Frame &collision(sf::Vector2f);
 
   std::queue<controller::Event *> &get_events();
 
-  Gra() {
-    b.loadFromFile("./sprites/b.png");
-    B.loadFromFile("./sprites/B.png");
-    W.loadFromFile("./sprites/W.png");
-    w.loadFromFile("./sprites/w.png");
-    sprites.emplace('b', &b);
-    sprites.emplace('B', &B);
-    sprites.emplace('W', &W);
-    sprites.emplace('w', &w);
-  }
+  Gra();
 
 private:
+  void draw_turn(std::list<Frame> &render_list,
+                  std::string , int number, 
+                  sf::Vector2f lu_point,
+                  sf::Vector2f rd_point);
   void draw_background(std::list<Frame> &rendrer_list);
-  void draw_table(std::list<Frame> &rendrer_list, GameState &,
+  void draw_table(std::list<Frame> &rendrer_list, GameState &, int collision,
                   sf::Vector2f lu_point = sf::Vector2f(320, 40),
                   sf::Vector2f rd_point = sf::Vector2f(960, 680));
+  void draw_history(std::list<Frame> &render_list,  int maximum,
+                     sf::Vector2f lu_point = sf::Vector2f(40, 40),
+                     sf::Vector2f rd_point = sf::Vector2f(280, 680));
   void draw_possible(std::list<Frame> &render_list, GameState &game_state,
                      BoardCell past,
                      sf::Vector2f lu_point = sf::Vector2f(320, 40),
