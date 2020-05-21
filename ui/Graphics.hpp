@@ -9,6 +9,7 @@
 #include <iostream>
 #include <list>
 #include <queue>
+#include <memory>
 
 sf::Vector2f operator/(sf::Vector2f, int);
 bool operator<(sf::Vector2f, sf::Vector2f);
@@ -34,7 +35,7 @@ private:
 
   
 
-  std::queue<controller::Event *> events;
+  std::queue<std::shared_ptr<controller::Event>> events;
 
   std::list<Frame> render_list;
   sf::Vector2f pos = {0, 0};
@@ -63,7 +64,7 @@ public:
   void compiling_event(Game &game);
   Frame &collision(sf::Vector2f);
 
-  std::queue<controller::Event *> &get_events();
+  std::queue<std::shared_ptr<controller::Event>> &get_events();
 
   Gra();
 

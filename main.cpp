@@ -107,7 +107,7 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
     game_state = game_test.return_current_state();
 
     while (!core.get_events().empty()) {
-      controller::Event *event = core.get_events().front();
+      controller::Event *event = core.get_events().front().get();
       controller::MoveEvent *move =
           dynamic_cast<controller::MoveEvent *>(event);
       controller::process(move, player, enemy, game_test,
@@ -123,7 +123,7 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
     }
 
     while (!network.get_events().empty()) {
-      controller::Event *event = network.get_events().front();
+      controller::Event *event = network.get_events().front().get();
       controller::MoveEvent *move =
           dynamic_cast<controller::MoveEvent *>(event);
       controller::process(move, enemy, player, game_test,

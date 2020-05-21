@@ -10,7 +10,7 @@ void Network::update() {
   sf::Packet packet;
   //  std::cerr << "no moves from enemy...\n";
   while (enemy_socket.receive(packet) == sf::Socket::Done) {
-    events.push(controller::unpack(packet));
+    events.push(std::shared_ptr<controller::Event>(controller::unpack(packet)));
   }
 }
 
@@ -56,4 +56,4 @@ bool Network::send_event(const controller::Event &e) {
   return status == sf::Socket::Done;
 }
 
-std::queue<controller::Event *> &Network::get_events() { return events; }
+std::queue<std::shared_ptr<controller::Event>> &Network::get_events() { return events; }

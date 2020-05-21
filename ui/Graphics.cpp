@@ -129,7 +129,7 @@ void Gra::compiling_event(Game &game) {
         BoardCell next = {y, x};
 
         if (game.return_current_state().check_move(game.return_current_state().who_moves(), past, next)) {
-          events.push(new controller::MoveEvent(past, next));
+          events.push(std::shared_ptr<controller::Event>(new controller::MoveEvent(past, next)));
         }
         past = next;
 
@@ -188,7 +188,7 @@ Gra::Frame &Gra::collision(sf::Vector2f posi) {
   return *res;
 }
 
-std::queue<controller::Event *> &Gra::get_events() { return events; }
+std::queue<std::shared_ptr<controller::Event>> &Gra::get_events() { return events; }
 
 void Gra::draw_turn(std::list<Frame> &render_list,
                   std::string , int number, 
