@@ -214,11 +214,17 @@ GameState::get_list_of_correct_moves(number_of_player player,
     return pos;
   if (player == who_last && from != last_move)
     return pos;
+  for (int i = 0; i < SIZE; i++)
+    for (int j = 0; j < SIZE; j++)
+      if (kill(player, BoardCell(i, j)) && !kill(player, from))
+        return pos;
 
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
-      if (check_move(player, from, BoardCell(i, j)))
-        pos.push_back(BoardCell(i, j));
+      if (check_move(player, from, BoardCell(i, j))) {
+        if ((kill(player, from) && is_kill(player, from, BoardCell(i, j))) || (!kill(player, from)))
+          pos.push_back(BoardCell(i, j));
+      }
   return pos;
 }
 
