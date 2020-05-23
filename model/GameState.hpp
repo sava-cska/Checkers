@@ -26,10 +26,11 @@ private:
   bool inside(BoardCell cell) const;
   bool kill(number_of_player who, BoardCell pos) const;
   bool is_kill(number_of_player who, BoardCell from, BoardCell to) const;
-  BoardCell find_kill(number_of_player who) const;
-
+  
 public:
   GameState();
+
+  BoardCell find_kill(number_of_player who) const;
 
   number_of_player who_moves() const;
   bool check_move(number_of_player player, BoardCell from, BoardCell to) const;
