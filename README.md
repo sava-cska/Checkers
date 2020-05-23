@@ -13,7 +13,7 @@ Project from our (with sergeypospelov and Yurafobus1) team at spring 2020.
 
 `sudo apt-get install libtclap-dev`
 
-install SFML
+Для установки библиотеки sfml надо в командной строке ввести:
 
 `sudo apt-get install libsfml-dev`
 
