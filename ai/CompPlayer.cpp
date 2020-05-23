@@ -1,6 +1,6 @@
 #include "CompPlayer.hpp"
 #include <algorithm>
-#include <iostream>
+#include <thread>
 
 static const int INF = (int)1e9;
 
@@ -32,8 +32,44 @@ bool CompPlayer::send_move(const BoardCell &from, const BoardCell &to) {
   return false;
 }
 
-int CompPlayer::score(GameState G) const {
-  int ordw = 0, ordb = 0, queenw = 0, queenb = 0, killw = 0, killb = 0;
+int CompPlayer::score(GameState G) {
+  int white_position[8][8] = 
+  {
+  {64, 63, 62, 61, 60, 59, 58, 57},
+  {56, 55, 54, 53, 52, 51, 50, 49},
+  {48, 47, 46, 45, 44, 43, 42, 41},
+  {40, 39, 38, 37, 36, 35, 34, 33},
+  {32, 31, 30, 29, 28, 27, 26, 25},
+  {24, 23, 22, 21, 20, 19, 18, 17},
+  {16, 15, 14, 13, 12, 11, 10, 9},
+  {8, 7, 6, 5, 4, 3, 2, 1}
+  };
+
+  int black_position[8][8] = 
+  {
+  {1, 2, 3, 4, 5, 6, 7, 8},
+  {9, 10, 11, 12, 13, 14, 15, 16},
+  {17, 18, 19, 20, 21, 22, 23, 24},
+  {25, 26, 27, 28, 29, 30, 31, 32},
+  {33, 34, 35, 36, 37, 38, 39, 40},
+  {41, 42, 43, 44, 45, 46, 47, 48},
+  {49, 50, 51, 52, 53, 54, 55, 56},
+  {57, 58, 59, 60, 61, 62, 63, 64}
+  };
+
+  int only_queen[8][8] = 
+  {
+  {1, 2, 3, 4, 4, 3, 2, 1},
+  {9, 10, 11, 12, 12, 11, 10, 9},
+  {17, 18, 19, 20, 20, 19, 18, 17},
+  {25, 26, 27, 28, 28, 27, 26, 25},
+  {25, 26, 27, 28, 28, 27, 26, 25},
+  {17, 18, 19, 20, 20, 19, 18, 17},
+  {9, 10, 11, 12, 12, 11, 10, 9},
+  {1, 2, 3, 4, 4, 3, 2, 1}
+  };
+  int ordw = 0, ordb = 0, queenw = 0, queenb = 0;
+  int sum_with_w = 0, sum_with_b = 0, sum_out_w = 0, sum_out_b = 0;
   for (int i = 0; i < G.SIZE; i++)
     for (int j = 0; j < G.SIZE; j++) {
       if (G.board[i][j] == 'w')
@@ -44,105 +80,125 @@ int CompPlayer::score(GameState G) const {
         queenw++;
       if (G.board[i][j] == 'B')
         queenb++;
-      if ((G.board[i][j] == 'w' || G.board[i][j] == 'W') &&
-          G.kill(FIRST, BoardCell(i, j)))
-        killw++;
-      if ((G.board[i][j] == 'b' || G.board[i][j] == 'B') &&
-          G.kill(SECOND, BoardCell(i, j)))
-        killb++;
+      if (G.board[i][j] == 'w' || G.board[i][j] == 'W')
+        sum_with_w += white_position[i][j], sum_out_w += only_queen[i][j];
+      if (G.board[i][j] == 'b' || G.board[i][j] == 'B')
+        sum_with_b += black_position[i][j], sum_out_b += only_queen[i][j];
     }
-  return ordw - ordb + (2 * queenw + 5) * (2 * queenw + 5) * (2 * queenw + 5) - (2 * queenb + 5) * (2 * queenb + 5) * (2 * queenb + 5) + (killw + 7) * (killw + 7) - (killb + 7) * (killb + 7);
+  if (ordw + ordb > 0)
+    return 100 * (ordw - ordb) + 1000 * (queenw - queenb) + sum_with_w - sum_with_b;
+  else
+    return 1000 * (queenw - queenb) + sum_out_w - sum_out_b;
 }
 
-std::pair<int, Move> CompPlayer::alpha_beta(GameState G, int alpha, int beta,
-                                            clock_t start_time, int seconds,
-                                            int deep, std::mt19937 gen) const {
+void CompPlayer::alpha_beta(GameState G, int alpha, int beta, clock_t start_time, int seconds,
+                 int deep, std::mt19937 gen, std::pair <int, Move> &total, bool flow) {
   state current = G.check_win();
   if (current != GAME) {
     if (current == DRAW)
-      return std::make_pair(0, Move());
+      total = std::make_pair(0, Move());
     if (current == FIRST_WIN)
-      return std::make_pair(INF, Move());
-    return std::make_pair(-INF, Move());
+      total = std::make_pair(INF, Move());
+    if (current == SECOND_WIN)
+      total = std::make_pair(-INF, Move());
+    return;
   }
-  if (deep == 0)
-    return std::make_pair(score(G), Move());
-  clock_t current_time = clock();
-  if (1.0 * (current_time - start_time) / CLOCKS_PER_SEC > seconds)
-    return std::make_pair(score(G), Move());
-
+  if (deep == 0) {
+    total = std::make_pair(score(G), Move());
+    return;
+  }
+  //clock_t current_time = clock();
+  //if (1.0 * (current_time - start_time) / CLOCKS_PER_SEC > seconds)
+    //return std::make_pair(score(G), Move());
+  
   number_of_player player = G.who_moves();
-  std::vector<Move> kill;
-  std::vector<Move> ordinary;
+  std::vector <Move> moves;
   for (int i = 0; i < G.SIZE; i++)
     for (int j = 0; j < G.SIZE; j++) {
-      std::vector<BoardCell> correct =
-          G.get_list_of_correct_moves(player, BoardCell(i, j));
-      for (int z = 0; z < (int)correct.size(); z++) {
-        if (G.is_kill(player, BoardCell(i, j), correct[z]))
-          kill.push_back(Move(BoardCell(i, j), correct[z]));
-        else
-          ordinary.push_back(Move(BoardCell(i, j), correct[z]));
-      }
+      std::vector<BoardCell> correct = G.get_list_of_correct_moves(player, BoardCell(i, j));
+      for (int z = 0; z < (int)correct.size(); z++)
+        moves.push_back(Move(BoardCell(i, j), correct[z]));
     }
-  shuffle(kill.begin(), kill.end(), gen);
-  shuffle(ordinary.begin(), ordinary.end(), gen);
+  shuffle(moves.begin(), moves.end(), gen);
+
   Move best_move;
   int current_score = (player == FIRST ? -INF : INF);
-  for (int i = 0; i < (int)kill.size(); i++) {
+  bool fl = (G.find_kill(player) == BoardCell(-1, -1));
+
+  if (flow) {
+    std::vector <std::thread> act;
+    std::vector <std::pair <int, Move> > res((int)moves.size());
+    for (int i = 0; i < (int)moves.size(); i++) {
     GameState cop = G;
-    cop.move(player, kill[i].from, kill[i].to);
-    std::pair<int, Move> result =
-        alpha_beta(cop, alpha, beta, start_time, seconds, deep, gen);
+    cop.move(player, moves[i].from, moves[i].to);
+    act.push_back(std::thread(alpha_beta, cop, alpha, beta, start_time, seconds, deep - fl, gen, std::ref(res[i]), false));
+    }
+    for (int i = 0; i < (int)moves.size(); i++)
+      act[i].join();
+    
+    for (int i = 0; i < (int)moves.size(); i++) {
+      if (player == FIRST) {
+        if (res[i].first >= current_score) {
+          best_move = moves[i];
+          current_score = res[i].first;
+        }
+        alpha = std::max(alpha, res[i].first);
+        if (alpha > beta) {
+          total = std::make_pair(alpha, moves[i]);
+          return;
+        }
+      } else {
+        if (res[i].first <= current_score) {
+          best_move = moves[i];
+          current_score = res[i].first;
+        }
+        beta = std::min(beta, res[i].first);
+        if (alpha > beta) {
+          total = std::make_pair(beta, moves[i]);
+          return;
+        }
+      }
+    }
+    total = std::make_pair(current_score, best_move);
+    return;
+  }
+
+  for (int i = 0; i < (int)moves.size(); i++) {
+    GameState cop = G;
+    cop.move(player, moves[i].from, moves[i].to);
+    std::pair<int, Move> result;
+    alpha_beta(cop, alpha, beta, start_time, seconds, deep - fl, gen, result, false);
     if (player == FIRST) {
       if (result.first >= current_score) {
-        best_move = kill[i];
+        best_move = moves[i];
         current_score = result.first;
       }
       alpha = std::max(alpha, result.first);
-      if (alpha > beta)
-        return std::make_pair(alpha, kill[i]);
+      if (alpha > beta) {
+        total = std::make_pair(alpha, moves[i]);
+        return;
+      }
     } else {
       if (result.first <= current_score) {
-        best_move = kill[i];
+        best_move = moves[i];
         current_score = result.first;
       }
       beta = std::min(beta, result.first);
-      if (alpha > beta)
-        return std::make_pair(beta, kill[i]);
+      if (alpha > beta) {
+        total = std::make_pair(beta, moves[i]);
+        return;
+      }
     }
   }
-  for (int i = 0; i < (int)ordinary.size(); i++) {
-    GameState cop = G;
-    cop.move(player, ordinary[i].from, ordinary[i].to);
-    std::pair<int, Move> result =
-        alpha_beta(cop, alpha, beta, start_time, seconds, deep - 1, gen);
-    if (player == FIRST) {
-      if (result.first >= current_score) {
-        best_move = ordinary[i];
-        current_score = result.first;
-      }
-      alpha = std::max(alpha, result.first);
-      if (alpha > beta)
-        return std::make_pair(alpha, ordinary[i]);
-    } else {
-      if (result.first <= current_score) {
-        best_move = ordinary[i];
-        current_score = result.first;
-      }
-      beta = std::min(beta, result.first);
-      if (alpha > beta)
-        return std::make_pair(beta, ordinary[i]);
-    }
-  }
-  return std::make_pair(current_score, best_move);
+  total = std::make_pair(current_score, best_move);
+  return;
 }
 
 Move CompPlayer::get_next_move(GameState G, int seconds, int deep) const {
   std::mt19937 gen(time(0));
   clock_t start = clock();
-  std::pair<int, Move> result =
-      alpha_beta(G, -INF, INF, start, seconds, deep, gen);
-  std::cout << result.first << '\n';
+  std::pair<int, Move> result;
+  alpha_beta(G, -INF, INF, start, seconds, deep, gen, result, true);
+  //std::cout << result.first << '\n';
   return result.second;
 }

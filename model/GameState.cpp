@@ -190,8 +190,10 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
     last_move = to;
   } else {
     BoardCell pos = find_kill(player);
-    if (pos != BoardCell(-1, -1))
-      board[pos.x][pos.y] = '.';
+    if (pos != BoardCell(-1, -1)) {
+      return; // Запрещаю не рубить
+      board[pos.x][pos.y] = '.'; // Зафук
+    }
     std::swap(board[to.x][to.y], board[from.x][from.y]);
     who_last = player;
     if (board[from.x][from.y] == 'W' || board[from.x][from.y] == 'B')
@@ -214,15 +216,15 @@ GameState::get_list_of_correct_moves(number_of_player player,
     return pos;
   if (player == who_last && from != last_move)
     return pos;
-  for (int i = 0; i < SIZE; i++)
-    for (int j = 0; j < SIZE; j++)
-      if (kill(player, BoardCell(i, j)) && !kill(player, from))
-        return pos;
+  BoardCell S = find_kill(player);
+  bool fl = kill(player, from);
+  if (S != BoardCell(-1, -1) && !fl) //Запрещаем не рубить
+    return pos;
 
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
       if (check_move(player, from, BoardCell(i, j))) {
-        if ((kill(player, from) && is_kill(player, from, BoardCell(i, j))) || (!kill(player, from)))
+        if ((fl && is_kill(player, from, BoardCell(i, j))) || !fl)
           pos.push_back(BoardCell(i, j));
       }
   return pos;

@@ -11,10 +11,9 @@ private:
   int seconds_;
   int deep_;
 
-  std::pair<int, Move> alpha_beta(GameState G, int alpha, int beta,
-                                  clock_t start_time, int seconds, int deep,
-                                  std::mt19937 gen) const;
-  int score(GameState G) const;
+  static void alpha_beta(GameState G, int alpha, int beta, clock_t start_time, int seconds, int deep,
+                  std::mt19937 gen, std::pair <int, Move> &total, bool flow);
+  static int score(GameState G);
   Move get_next_move(GameState G, int seconds, int deep) const;
 
   mutable GameState gs;
