@@ -180,12 +180,12 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
       return; // Запрещаю не рубить
       board[pos.x][pos.y] = '.'; // Зафук
     }
-    std::swap(board[to.x][to.y], board[from.x][from.y]);
     who_last = player;
     if (board[from.x][from.y] == 'W' || board[from.x][from.y] == 'B')
       move_to_draw++;
     type_last = 0;
     last_move = to;
+    std::swap(board[to.x][to.y], board[from.x][from.y]);    
   }
   if (player == FIRST && to.x == 0 && board[to.x][to.y] == 'w')
     board[to.x][to.y] = 'W';
