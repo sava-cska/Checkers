@@ -135,8 +135,9 @@ void Gra::compiling_event(Game &game) {
         int y = res.data[0];
 
         BoardCell next = {y, x};
-
-        if (game.return_current_state().check_move(game.return_current_state().who_moves(), past, next)) {
+        
+        bool die = false;
+        if (game.return_current_state().check_move(game.return_current_state().who_moves(), past, next, die)) {
           events.push(std::shared_ptr<controller::Event>(new controller::MoveEvent(past, next)));
         }
         past = next;

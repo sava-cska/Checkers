@@ -22,7 +22,8 @@ bool GameState::inside(BoardCell cell) const {
 }
 
 bool GameState::check_ordinary(number_of_player player, BoardCell from,
-                               BoardCell to) const {
+                               BoardCell to, bool &die) const {
+  die = false;
   if ((player == SECOND && board[from.x][from.y] == 'w') ||
       (player == FIRST && board[from.x][from.y] == 'b'))
     return false;
@@ -40,13 +41,16 @@ bool GameState::check_ordinary(number_of_player player, BoardCell from,
     for (int dy = -1; dy <= 1; dy += 2)
       if (to == BoardCell(from.x + dx * 2, from.y + dy * 2) &&
           (board[from.x + dx][from.y + dy] == oth1 ||
-           board[from.x + dx][from.y + dy] == oth2))
+           board[from.x + dx][from.y + dy] == oth2)) {
+        die = true;
         return true;
+      }
   return false;
 }
 
 bool GameState::check_queen(number_of_player player, BoardCell from,
-                            BoardCell to) const {
+                            BoardCell to, bool &die) const {
+  die = false;
   if ((player == SECOND && board[from.x][from.y] == 'W') ||
       (player == FIRST && board[from.x][from.y] == 'B'))
     return false;
@@ -64,6 +68,7 @@ bool GameState::check_queen(number_of_player player, BoardCell from,
     else
       to.x--, to.y -= dy;
   }
+  die = (cntw + cntb > 0);
   if (player == FIRST)
     if (cntw == 0 && cntb <= 1)
       return true;
@@ -76,7 +81,7 @@ bool GameState::check_queen(number_of_player player, BoardCell from,
 }
 
 bool GameState::check_move(number_of_player player, BoardCell from,
-                           BoardCell to) const {
+                           BoardCell to, bool &die) const {
   if (!inside(from) || !inside(to))
     return false;
   if (board[from.x][from.y] == '.')
@@ -85,44 +90,45 @@ bool GameState::check_move(number_of_player player, BoardCell from,
     return false;
 
   if (board[from.x][from.y] == 'w' || board[from.x][from.y] == 'b')
-    return check_ordinary(player, from, to);
+    return check_ordinary(player, from, to, die);
 
-  return check_queen(player, from, to);
-}
-
-bool GameState::is_kill(number_of_player who, BoardCell from,
-                        BoardCell to) const {
-  if (!check_move(who, from, to))
-    return false;
-
-  int dy = (from.x + from.y == to.x + to.y ? -1 : 1);
-  BoardCell cur = to;
-  while (cur.x != from.x) {
-    if (board[cur.x][cur.y] != '.')
-      return true;
-    if (cur.x < from.x)
-      cur.x++, cur.y += dy;
-    else
-      cur.x--, cur.y -= dy;
-  }
-  return false;
+  return check_queen(player, from, to, die);
 }
 
 bool GameState::kill(number_of_player who, BoardCell pos) const {
-  for (int i = 0; i < SIZE; i++)
-    for (int j = 0; j < SIZE; j++) {
-      if (is_kill(who, pos, BoardCell(i, j)))
-        return true;
-    }
+  char small = (who == FIRST ? 'w' : 'b');
+  char big = (who == FIRST ? 'W' : 'B');
+  if (!inside(pos) || (board[pos.x][pos.y] != small && board[pos.x][pos.y] != big))
+    return false;
+  if (board[pos.x][pos.y] == small) {
+      for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
+        for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+          bool die = false;
+          if (check_move(who, pos, BoardCell(pos.x + 2 * sgn1, pos.y + 2 * sgn2), die))
+            if (die)
+              return true;
+        }
+    return false;
+  }
+  for (int c = 2; c <= SIZE; c++)
+    for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
+      for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+        bool die = false;
+        if (check_move(who, pos, BoardCell(pos.x + c * sgn1, pos.y + c * sgn2), die))
+          if (die)
+            return true;
+        }
   return false;
 }
 
-BoardCell GameState::find_kill(number_of_player who) const {
+bool GameState::find_kill(number_of_player who) const {
+  char small = (who == FIRST ? 'w' : 'b');
+  char big = (who == FIRST ? 'W' : 'B');
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
-      if (kill(who, BoardCell(i, j)))
-        return BoardCell(i, j);
-  return BoardCell(-1, -1);
+      if ((board[i][j] == small || board[i][j] == big) && kill(who, BoardCell(i, j)))
+        return true;
+  return false;
 }
 
 char GameState::get_cell(BoardCell cell) const {
@@ -148,9 +154,10 @@ number_of_player GameState::who_moves() const {
 }
 
 void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
+  bool die = false;
   if (who_moves() != player)
     return;
-  if (!check_move(player, from, to))
+  if (!check_move(player, from, to, die))
     return;
   if (player == who_last)
     if (from != last_move)
@@ -158,10 +165,7 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
 
   int dy = (to.x + to.y == from.x + from.y ? -1 : 1);
   BoardCell cop = to;
-  bool die = false;
   while (cop != from) {
-    if (board[cop.x][cop.y] != '.')
-      die = true;
     board[cop.x][cop.y] = '.';
     if (cop.x < from.x)
       cop.x++, cop.y += dy;
@@ -175,17 +179,16 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
     type_last = 1;
     last_move = to;
   } else {
-    BoardCell pos = find_kill(player);
-    if (pos != BoardCell(-1, -1)) {
+    if (find_kill(player)) {
       return; // Запрещаю не рубить
-      board[pos.x][pos.y] = '.'; // Зафук
+      //board[pos.x][pos.y] = '.'; // Зафук
     }
-    std::swap(board[to.x][to.y], board[from.x][from.y]);
     who_last = player;
     if (board[from.x][from.y] == 'W' || board[from.x][from.y] == 'B')
       move_to_draw++;
     type_last = 0;
     last_move = to;
+    std::swap(board[to.x][to.y], board[from.x][from.y]);
   }
   if (player == FIRST && to.x == 0 && board[to.x][to.y] == 'w')
     board[to.x][to.y] = 'W';
@@ -200,17 +203,20 @@ void GameState::get_list_of_correct_moves(number_of_player player, BoardCell fro
     return;
   if (player == who_last && from != last_move)
     return;
-  BoardCell S = find_kill(player);
   bool fl = kill(player, from);
-  if (S != BoardCell(-1, -1) && !fl) //Запрещаем не рубить
+  if (!fl && find_kill(player)) //Запрещаем не рубить
     return;
-
-  for (int i = 0; i < SIZE; i++)
-    for (int j = 0; j < SIZE; j++)
-      if (check_move(player, from, BoardCell(i, j))) {
-        if (!fl || is_kill(player, from, BoardCell(i, j)))
-          moves.push_back(BoardCell(i, j));
+  
+  int bound = (board[from.x][from.y] >= 'a' && board[from.x][from.y] <= 'z' ? 2 : SIZE);
+  for (int c = 1; c <= bound; c++)
+    for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
+      for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+        bool die = false;
+        if (check_move(player, from, BoardCell(from.x + c * sgn1, from.y + c * sgn2), die)) {
+          if (!fl || die)
+            moves.push_back(BoardCell(from.x + c * sgn1, from.y + c * sgn2));
       }
+    }
   return;
 }
 
@@ -218,12 +224,19 @@ state GameState::check_win() const {
   if (move_to_draw >= DRAW_MOVE)
     return DRAW;
   number_of_player player = who_moves();
+  char small = (player == FIRST ? 'w' : 'b');
+  char big = (player == FIRST ? 'W' : 'B');
   for (int i1 = 0; i1 < SIZE; i1++)
-    for (int j1 = 0; j1 < SIZE; j1++)
+    for (int j1 = 0; j1 < SIZE; j1++) {
+      if (board[i1][j1] != small && board[i1][j1] != big)
+        continue;
       for (int i2 = 0; i2 < SIZE; i2++)
-        for (int j2 = 0; j2 < SIZE; j2++)
-          if (check_move(player, BoardCell(i1, j1), BoardCell(i2, j2)))
+        for (int j2 = 0; j2 < SIZE; j2++) {
+          bool die = false;
+          if (check_move(player, BoardCell(i1, j1), BoardCell(i2, j2), die))
             return GAME;
+        }
+    }
   if (player == FIRST)
     return SECOND_WIN;
   else
