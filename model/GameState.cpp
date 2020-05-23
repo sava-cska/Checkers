@@ -1,5 +1,6 @@
 #include "GameState.hpp"
 #include <cassert>
+#include <iostream>
 
 GameState::GameState() {
   who_last = SECOND;
@@ -119,6 +120,25 @@ BoardCell GameState::find_kill(number_of_player who) const {
   return BoardCell(-1, -1);
 }
 
+bool GameState::is_kill(number_of_player who, BoardCell from,
+                        BoardCell to) const {
+  if (!check_move(who, from, to))
+    return false;
+
+  bool fl = false;
+  int dy = (from.x + from.y == to.x + to.y ? -1 : 1);
+  BoardCell cur = to;
+  while (cur.x != from.x) {
+    if (board[cur.x][cur.y] != '.')
+      fl = true;
+    if (cur.x < from.x)
+      cur.x++, cur.y += dy;
+    else
+      cur.x--, cur.y -= dy;
+  }
+  return fl;
+}
+
 char GameState::get_cell(BoardCell cell) const {
   assert(inside(cell));
   return board[cell.x][cell.y];
@@ -186,18 +206,25 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
   return;
 }
 
-std::vector<BoardCell> GameState::get_list_of_correct_moves(number_of_player player,
-                                                            BoardCell from) const {
+std::vector<BoardCell>
+GameState::get_list_of_correct_moves(number_of_player player,
+                                     BoardCell from) const {
   std::vector<BoardCell> pos;
   if (who_moves() != player)
     return pos;
   if (player == who_last && from != last_move)
     return pos;
+  for (int i = 0; i < SIZE; i++)
+    for (int j = 0; j < SIZE; j++)
+      if (kill(player, BoardCell(i, j)) && !kill(player, from))
+        return pos;
 
   for (int i = 0; i < SIZE; i++)
     for (int j = 0; j < SIZE; j++)
-      if (check_move(player, from, BoardCell(i, j)))
-        pos.push_back(BoardCell(i, j));
+      if (check_move(player, from, BoardCell(i, j))) {
+        if ((kill(player, from) && is_kill(player, from, BoardCell(i, j))) || (!kill(player, from)))
+          pos.push_back(BoardCell(i, j));
+      }
   return pos;
 }
 
@@ -215,6 +242,15 @@ state GameState::check_win() const {
     return SECOND_WIN;
   else
     return FIRST_WIN;
+}
+
+void GameState::show() const {
+  for (int i = 0; i < SIZE; i++) {
+    for (int j = 0; j < SIZE; j++)
+      std::cout << board[i][j];
+    std::cout << '\n';
+  }
+  return;
 }
 
 bool operator!=(const GameState &fir, const GameState &sec) {

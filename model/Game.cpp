@@ -6,7 +6,7 @@ Game::Game() {
   game.push_back(current);
 }
 
-int Game::number_of_states() const { return (int)game.size(); }
+int Game::number_of_states() const { return (int) game.size(); }
 
 void Game::return_to_state(int number) {
   if (number < 0 || number >= (int)game.size())
@@ -23,7 +23,7 @@ GameState Game::watch_state(int number) const {
   return game[number];
 }
 
-GameState Game::return_current_state() const { return current; }
+GameState& Game::return_current_state() { return current; }
 
 void Game::move(number_of_player player, BoardCell from, BoardCell to) {
   GameState copy = current;
@@ -50,6 +50,7 @@ struct helper {
 
 void XMLCALL startElement(void *userData, const XML_Char *name,
                           const XML_Char **atts) {
+  (void)atts;
   helper *ptr = (helper *)userData;
   ptr->tag = name;
   if ((std::string)name == "GameState")
@@ -58,6 +59,7 @@ void XMLCALL startElement(void *userData, const XML_Char *name,
 }
 
 void XMLCALL endElement(void *userData, const XML_Char *name) {
+  (void)name;
   helper *ptr = (helper *)userData;
   if (ptr->tag == "GameState")
     (ptr->g).game.push_back(ptr->state);

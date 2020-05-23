@@ -7,3 +7,6 @@ bool BoardCell::operator==(BoardCell oth) const {
 }
 
 bool BoardCell::operator!=(BoardCell oth) const { return !(*this == oth); }
+
+Move::Move(const BoardCell &cfrom, const BoardCell &cto)
+    : from(cfrom), to(cto) {}

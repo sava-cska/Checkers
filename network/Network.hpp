@@ -7,6 +7,7 @@
 #include <queue>
 #include <string>
 #include <utility>
+#include <memory>
 
 namespace controller {
 class Event;
@@ -19,16 +20,16 @@ public:
   void update();
   bool setup_server();
   bool connect_to_player(const sf::IpAddress &);
-  bool send_move(const BoardCell &, const BoardCell &);
+  bool send_event(const controller::Event &e);
 
-  std::queue<controller::Event *> &get_events();
+  std::queue<std::shared_ptr<controller::Event>> &get_events();
 
 private:
   const int PORT;
   bool listening_now;
   sf::TcpListener listener;
   sf::TcpSocket enemy_socket;
-  std::queue<controller::Event *> events;
+  std::queue<std::shared_ptr<controller::Event>> events;
 
 private:
 };

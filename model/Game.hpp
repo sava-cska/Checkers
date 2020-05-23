@@ -1,5 +1,5 @@
-#ifndef _GAME_HPP_
-#define _GAME_HPP_
+#ifndef _Game_HPP_
+#define _Game_HPP_
 
 #include "GameState.hpp"
 
@@ -14,7 +14,7 @@ public:
   int number_of_states() const;
   void return_to_state(int number);
   GameState watch_state(int number) const;
-  GameState return_current_state() const;
+  GameState& return_current_state();
 
   void move(number_of_player player, BoardCell from, BoardCell to);
 
@@ -23,7 +23,7 @@ public:
 
   friend void XMLCALL endElement(void *userData, const XML_Char *name);
 
-  friend class Test_game;
+  friend class TestGame;
 };
 
 #endif
