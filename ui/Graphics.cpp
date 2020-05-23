@@ -88,7 +88,7 @@ void Gra::drawing() {
     window.draw(elem.picture);
     if (elem.data2 != "") {
       sf::Text texting(elem.data2, font, 40);
-      texting.setFillColor(sf::Color::Black);
+      texting.setColor(sf::Color::Black);
       texting.setPosition(elem.picture.getPosition());
       window.draw(texting);
     }

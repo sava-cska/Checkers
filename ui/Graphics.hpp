@@ -1,6 +1,8 @@
 #ifndef CHECKERS_UI_DRAW_SMF_HPP_
 #define CHECKERS_UI_DRAW_SMF_HPP_
 
+#define SFML_NO_DEPRECATED_WARNINGS
+
 #include "Event.hpp"
 #include "Game.hpp"
 #include <SFML/Graphics.hpp>
