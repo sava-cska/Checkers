@@ -48,22 +48,22 @@ $(MAIN): $(OBJDIR) $(OBJDIR)/$(MAIN).o
 
 $(MAIN_TEST_MODEL): $(OBJDIR) $(OBJDIR)/$(MAIN_TEST_MODEL).o
 
-$(OBJDIR)/%.o: $(SRCDIR_MODEL)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR_MODEL)/%.cpp $(SRCDIR_MODEL)/%.hpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -MMD -o $@ $<
 
-$(OBJDIR)/%.o: $(SRCDIR_NETWORK)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR_NETWORK)/%.cpp $(SRCDIR_NETWORK)/%.hpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -MMD -o $@ $<
 
-$(OBJDIR)/%.o: $(SRCDIR_UI)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR_UI)/%.cpp $(SRCDIR_UI)/%.hpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -MMD -o $@ $<
 
-$(OBJDIR)/%.o: $(SRCDIR_CONTROLLER)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR_CONTROLLER)/%.cpp $(SRCDIR_CONTROLLER)/%.hpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -MMD -o $@ $<
 
-$(OBJDIR)/%.o: $(SRCDIR_AI)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR_AI)/%.cpp $(SRCDIR_AI)/%.hpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -MMD -o $@ $<
 
-$(OBJDIR)/%.o: $(SRCDIR_TEST_MODEL)/%.cpp
+$(OBJDIR)/%.o: $(SRCDIR_TEST_MODEL)/%.cpp $(SRCDIR_TEST_MODEL)/%.hpp
 	$(CXX) $(CXXFLAGS) $(INC) -c -MMD -o $@ $<
 
 $(OBJDIR)/$(MAIN).o: $(MAIN).cpp
