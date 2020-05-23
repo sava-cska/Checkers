@@ -103,7 +103,8 @@ static void get_move(controller::IPlayer *player, GameState &gs) {
 TextView::TextView(int argc, char **argv) {
   Network network;
 
-  GameState game_state;
+  Game game_test;
+  GameState& game_state = game_test.return_current_state();
   controller::IPlayer *player = nullptr;
   controller::IPlayer *enemy = nullptr;
 
@@ -126,7 +127,7 @@ TextView::TextView(int argc, char **argv) {
     }
 
     network.update();
-
+    game_state = game_test.return_current_state();
 
     if (game_state.who_moves() == player->turn) {
       get_move(player, game_state);
@@ -134,16 +135,16 @@ TextView::TextView(int argc, char **argv) {
       get_move(enemy, game_state);
     }
 
-    if (!network.get_events().empty()) {
-      controller::Event *event = network.get_events().front();
+    while (!network.get_events().empty()) {
+      controller::Event *event = network.get_events().front().get();
       controller::MoveEvent *move =
           dynamic_cast<controller::MoveEvent *>(event);
-      controller::process(move, enemy, player, game_state,
+      controller::process(move, enemy, player, game_test,
                           mode); // overloaded in Event.hpp
 
       controller::GiveUpEvent *giveUp =
           dynamic_cast<controller::GiveUpEvent *>(event);
-      controller::process(giveUp, enemy, player, game_state, mode);
+      controller::process(giveUp, enemy, player, game_test, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!
