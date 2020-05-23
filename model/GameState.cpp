@@ -188,7 +188,11 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
       move_to_draw++;
     type_last = 0;
     last_move = to;
+<<<<<<< HEAD
     std::swap(board[to.x][to.y], board[from.x][from.y]);
+=======
+    std::swap(board[to.x][to.y], board[from.x][from.y]);    
+>>>>>>> 2cde441a96fb199f3280bfd5b1be06959cd9f101
   }
   if (player == FIRST && to.x == 0 && board[to.x][to.y] == 'w')
     board[to.x][to.y] = 'W';
