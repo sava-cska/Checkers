@@ -57,7 +57,8 @@ void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
                         BoardCell past, sf::Vector2f lu_point,
                         sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
-  auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
+  std::vector <BoardCell> b;
+  game_state.get_list_of_correct_moves(game_state.who_moves(), past, b);
   for (auto &a : b) {
     sf::RectangleShape block;
     block.setSize(size / 8);

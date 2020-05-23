@@ -31,7 +31,6 @@ void Game::move(number_of_player player, BoardCell from, BoardCell to) {
   current.move(player, from, to);
   if (current != copy) {
     game.push_back(current);
-
     natation.push_back(std::to_string(number_of_states() - 1) + "." + 
     std::to_string((8 - from.x) * 10 + from.y) + ">" + std::to_string((8 -to.x) * 10 + to.y));
   }
