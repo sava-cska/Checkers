@@ -1,5 +1,4 @@
 #include "TestGameState.hpp"
-#include "GameState.hpp"
 
 void TestGameState::test_init() {
   GameState g;
@@ -25,6 +24,37 @@ void TestGameState::test_init() {
   return;
 }
 
+void TestGameState::calculate(GameState &G) {
+  for (int i = 0; i < G.SIZE; i++)
+    for (int j = 0; j < G.SIZE; j++) {
+      if (i == 0 || j == 0)
+        G.white_up_down[i][j] = G.black_up_down[i][j] = 0;
+      else {
+        G.white_up_down[i][j] = G.white_up_down[i - 1][j - 1];
+        G.black_up_down[i][j] = G.black_up_down[i - 1][j - 1];
+      }
+      if (G.board[i][j] == 'w' || G.board[i][j] == 'W')
+        G.white_up_down[i][j]++;
+      if (G.board[i][j] == 'b' || G.board[i][j] == 'B')
+        G.black_up_down[i][j]++;
+    }
+
+  for (int i = G.SIZE - 1; i >= 0; i--)
+    for (int j = 0; j < G.SIZE; j++) {
+      if (i == G.SIZE - 1 || j == 0)
+        G.white_down_up[i][j] = G.black_down_up[i][j] = 0;
+      else {
+        G.white_down_up[i][j] = G.white_down_up[i + 1][j - 1];
+        G.black_down_up[i][j] = G.black_down_up[i + 1][j - 1];
+      }
+      if (G.board[i][j] == 'w' || G.board[i][j] == 'W')
+        G.white_down_up[i][j]++;
+      if (G.board[i][j] == 'b' || G.board[i][j] == 'B')
+        G.black_down_up[i][j]++;
+    }
+  return;
+}
+
 void TestGameState::test_ordinary() {
   GameState g;
   for (int i = 0; i < g.SIZE; i++)
@@ -42,21 +72,24 @@ void TestGameState::test_ordinary() {
   g.board[5][5] = 'w';
   g.board[6][4] = 'w';
   g.board[4][3] = 'b';
-  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(2, 3), BoardCell(0, 1)));
-  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(3, 2), BoardCell(2, 1)));
-  CPPUNIT_ASSERT(!g.check_ordinary(FIRST, BoardCell(1, 2), BoardCell(3, 4)));
-  CPPUNIT_ASSERT(!g.check_ordinary(FIRST, BoardCell(3, 5), BoardCell(3, 7)));
-  CPPUNIT_ASSERT(!g.check_ordinary(FIRST, BoardCell(5, 5), BoardCell(6, 6)));
-  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(4, 2), BoardCell(3, 3)));
-  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(3, 2), BoardCell(5, 4)));
+  calculate(g);
 
-  CPPUNIT_ASSERT(!g.check_ordinary(SECOND, BoardCell(4, 3), BoardCell(2, 5)));
-  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(3, 4)));
-  CPPUNIT_ASSERT(!g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(2, 2)));
-  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(0, 5), BoardCell(1, 6)));
-  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(2, 1)));
-  CPPUNIT_ASSERT(!g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(0, 3)));
-  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(4, 3), BoardCell(2, 1)));
+  bool die = false;
+  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(2, 3), BoardCell(0, 1), die));
+  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(3, 2), BoardCell(2, 1), die));
+  CPPUNIT_ASSERT(!g.check_ordinary(FIRST, BoardCell(1, 2), BoardCell(3, 4), die));
+  CPPUNIT_ASSERT(!g.check_ordinary(FIRST, BoardCell(3, 5), BoardCell(3, 7), die));
+  CPPUNIT_ASSERT(!g.check_ordinary(FIRST, BoardCell(5, 5), BoardCell(6, 6), die));
+  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(4, 2), BoardCell(3, 3), die));
+  CPPUNIT_ASSERT(g.check_ordinary(FIRST, BoardCell(3, 2), BoardCell(5, 4), die));
+
+  CPPUNIT_ASSERT(!g.check_ordinary(SECOND, BoardCell(4, 3), BoardCell(2, 5), die));
+  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(3, 4), die));
+  CPPUNIT_ASSERT(!g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(2, 2), die));
+  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(0, 5), BoardCell(1, 6), die));
+  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(2, 1), die));
+  CPPUNIT_ASSERT(!g.check_ordinary(SECOND, BoardCell(1, 2), BoardCell(0, 3), die));
+  CPPUNIT_ASSERT(g.check_ordinary(SECOND, BoardCell(4, 3), BoardCell(2, 1), die));
   return;
 }
 
@@ -76,19 +109,22 @@ void TestGameState::test_queen() {
   g.board[4][6] = 'W';
   g.board[6][4] = 'b';
   g.board[6][7] = 'B';
-  CPPUNIT_ASSERT(g.check_queen(FIRST, BoardCell(4, 6), BoardCell(0, 2)));
-  CPPUNIT_ASSERT(g.check_queen(FIRST, BoardCell(4, 6), BoardCell(2, 4)));
-  CPPUNIT_ASSERT(g.check_queen(FIRST, BoardCell(4, 6), BoardCell(5, 7)));
-  CPPUNIT_ASSERT(!g.check_queen(FIRST, BoardCell(4, 6), BoardCell(4, 5)));
-  CPPUNIT_ASSERT(!g.check_queen(FIRST, BoardCell(6, 7), BoardCell(0, 1)));
-  CPPUNIT_ASSERT(!g.check_queen(FIRST, BoardCell(1, 6), BoardCell(4, 3)));
+  calculate(g);
 
-  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(1, 6), BoardCell(4, 3)));
-  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(1, 6), BoardCell(7, 0)));
-  CPPUNIT_ASSERT(!g.check_queen(SECOND, BoardCell(2, 6), BoardCell(4, 3)));
-  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(1, 3), BoardCell(5, 7)));
-  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(2, 6), BoardCell(5, 3)));
-  CPPUNIT_ASSERT(!g.check_queen(SECOND, BoardCell(4, 6), BoardCell(3, 7)));
+  bool die = false;
+  CPPUNIT_ASSERT(g.check_queen(FIRST, BoardCell(4, 6), BoardCell(0, 2), die));
+  CPPUNIT_ASSERT(g.check_queen(FIRST, BoardCell(4, 6), BoardCell(2, 4), die));
+  CPPUNIT_ASSERT(g.check_queen(FIRST, BoardCell(4, 6), BoardCell(5, 7), die));
+  CPPUNIT_ASSERT(!g.check_queen(FIRST, BoardCell(4, 6), BoardCell(4, 5), die));
+  CPPUNIT_ASSERT(!g.check_queen(FIRST, BoardCell(6, 7), BoardCell(0, 1), die));
+  CPPUNIT_ASSERT(!g.check_queen(FIRST, BoardCell(1, 6), BoardCell(4, 3), die));
+
+  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(1, 6), BoardCell(4, 3), die));
+  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(1, 6), BoardCell(7, 0), die));
+  CPPUNIT_ASSERT(!g.check_queen(SECOND, BoardCell(2, 6), BoardCell(4, 3), die));
+  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(1, 3), BoardCell(5, 7), die));
+  CPPUNIT_ASSERT(g.check_queen(SECOND, BoardCell(2, 6), BoardCell(5, 3), die));
+  CPPUNIT_ASSERT(!g.check_queen(SECOND, BoardCell(4, 6), BoardCell(3, 7), die));
   return;
 }
 
@@ -109,24 +145,27 @@ void TestGameState::test_check_move() {
   g.board[5][5] = 'w';
   g.board[6][4] = 'w';
   g.board[4][3] = 'b';
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(0, 0), BoardCell(1, 1)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(2, 3), BoardCell(0, 5)));
-  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(2, 3), BoardCell(0, 1)));
-  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(3, 2), BoardCell(2, 1)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(6, 4), BoardCell(8, 6)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(1, 2), BoardCell(3, 4)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(3, 5), BoardCell(3, 7)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(5, 5), BoardCell(6, 6)));
+  calculate(g);
 
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(4, 3), BoardCell(2, 5)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 7), BoardCell(0, 8)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 4), BoardCell(3, 2)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 2), BoardCell(3, 4)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 2), BoardCell(2, 2)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(0, 5), BoardCell(1, 6)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 2), BoardCell(2, 1)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 2), BoardCell(0, 3)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(4, 3), BoardCell(2, 1)));
+  bool die = false;
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(0, 0), BoardCell(1, 1), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(2, 3), BoardCell(0, 5), die));
+  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(2, 3), BoardCell(0, 1), die));
+  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(3, 2), BoardCell(2, 1), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(6, 4), BoardCell(8, 6), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(1, 2), BoardCell(3, 4), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(3, 5), BoardCell(3, 7), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(5, 5), BoardCell(6, 6), die));
+
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(4, 3), BoardCell(2, 5), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 7), BoardCell(0, 8), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 4), BoardCell(3, 2), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 2), BoardCell(3, 4), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 2), BoardCell(2, 2), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(0, 5), BoardCell(1, 6), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 2), BoardCell(2, 1), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 2), BoardCell(0, 3), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(4, 3), BoardCell(2, 1), die));
 
   for (int i = 0; i < g.SIZE; i++)
     for (int j = 0; j < g.SIZE; j++)
@@ -142,23 +181,25 @@ void TestGameState::test_check_move() {
   g.board[4][6] = 'W';
   g.board[6][4] = 'b';
   g.board[6][7] = 'B';
-  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(4, 6), BoardCell(0, 2)));
-  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(4, 6), BoardCell(2, 4)));
-  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(4, 6), BoardCell(5, 7)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(4, 6), BoardCell(4, 5)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(4, 6), BoardCell(3, 7)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(6, 7), BoardCell(0, 1)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(1, 6), BoardCell(4, 3)));
-  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(4, 6), BoardCell(6, 4)));
+  calculate(g);
 
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 6), BoardCell(4, 3)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 6), BoardCell(7, 0)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(2, 6), BoardCell(4, 3)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 3), BoardCell(5, 7)));
-  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(2, 6), BoardCell(5, 3)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(4, 6), BoardCell(3, 7)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(6, 7), BoardCell(1, 2)));
-  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 2), BoardCell(2, 2)));
+  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(4, 6), BoardCell(0, 2), die));
+  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(4, 6), BoardCell(2, 4), die));
+  CPPUNIT_ASSERT(g.check_move(FIRST, BoardCell(4, 6), BoardCell(5, 7), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(4, 6), BoardCell(4, 5), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(4, 6), BoardCell(3, 7), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(6, 7), BoardCell(0, 1), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(1, 6), BoardCell(4, 3), die));
+  CPPUNIT_ASSERT(!g.check_move(FIRST, BoardCell(4, 6), BoardCell(6, 4), die));
+
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 6), BoardCell(4, 3), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 6), BoardCell(7, 0), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(2, 6), BoardCell(4, 3), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(1, 3), BoardCell(5, 7), die));
+  CPPUNIT_ASSERT(g.check_move(SECOND, BoardCell(2, 6), BoardCell(5, 3), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(4, 6), BoardCell(3, 7), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(6, 7), BoardCell(1, 2), die));
+  CPPUNIT_ASSERT(!g.check_move(SECOND, BoardCell(1, 2), BoardCell(2, 2), die));
   return;
 }
 
@@ -190,6 +231,8 @@ void TestGameState::test_kill() {
   g.board[5][5] = 'w';
   g.board[6][4] = 'w';
   g.board[4][3] = 'b';
+  calculate(g);
+
   CPPUNIT_ASSERT(g.kill(FIRST, BoardCell(2, 3)));
   CPPUNIT_ASSERT(!g.kill(FIRST, BoardCell(3, 5)));
   CPPUNIT_ASSERT(!g.kill(FIRST, BoardCell(6, 4)));
@@ -214,6 +257,8 @@ void TestGameState::test_kill() {
   g.board[4][6] = 'W';
   g.board[6][4] = 'b';
   g.board[6][7] = 'B';
+  calculate(g);
+
   CPPUNIT_ASSERT(g.kill(FIRST, BoardCell(4, 6)));
   CPPUNIT_ASSERT(!g.kill(FIRST, BoardCell(3, 4)));
   CPPUNIT_ASSERT(!g.kill(FIRST, BoardCell(1, 5)));
@@ -228,8 +273,8 @@ void TestGameState::test_kill() {
 
 void TestGameState::test_find_kill() {
   GameState g;
-  CPPUNIT_ASSERT(g.find_kill(FIRST) == BoardCell(-1, -1));
-  CPPUNIT_ASSERT(g.find_kill(SECOND) == BoardCell(-1, -1));
+  CPPUNIT_ASSERT(!g.find_kill(FIRST));
+  CPPUNIT_ASSERT(!g.find_kill(SECOND));
   for (int i = 0; i < g.SIZE; i++)
     for (int j = 0; j < g.SIZE; j++)
       g.board[i][j] = '.';
@@ -245,11 +290,10 @@ void TestGameState::test_find_kill() {
   g.board[5][5] = 'w';
   g.board[6][4] = 'w';
   g.board[4][3] = 'b';
-  BoardCell A = g.find_kill(FIRST);
-  BoardCell B = g.find_kill(SECOND);
-  CPPUNIT_ASSERT(A == BoardCell(2, 3) || A == BoardCell(3, 2));
-  CPPUNIT_ASSERT(B == BoardCell(1, 2) || B == BoardCell(2, 6) ||
-                 B == BoardCell(4, 3));
+  calculate(g);
+
+  CPPUNIT_ASSERT(g.find_kill(FIRST));
+  CPPUNIT_ASSERT(g.find_kill(SECOND));
 
   for (int i = 0; i < g.SIZE; i++)
     for (int j = 0; j < g.SIZE; j++)
@@ -265,8 +309,9 @@ void TestGameState::test_find_kill() {
   g.board[4][6] = 'W';
   g.board[6][4] = 'b';
   g.board[6][7] = 'B';
-  A = g.find_kill(FIRST);
-  CPPUNIT_ASSERT(A == BoardCell(4, 6));
+  calculate(g);
+
+  CPPUNIT_ASSERT(g.find_kill(FIRST));
   return;
 }
 
@@ -288,6 +333,8 @@ void TestGameState::test_who_moves() {
   g.board[5][5] = 'w';
   g.board[6][4] = 'w';
   g.board[4][3] = 'b';
+  calculate(g);
+
   g.last_move = BoardCell(2, 3);
   g.who_last = FIRST;
   g.type_last = 1;
@@ -316,6 +363,8 @@ void TestGameState::test_who_moves() {
   g.board[4][6] = 'W';
   g.board[6][4] = 'b';
   g.board[6][7] = 'B';
+  calculate(g);
+
   g.last_move = BoardCell(4, 6);
   g.who_last = FIRST;
   g.type_last = 0;
@@ -343,6 +392,8 @@ void TestGameState::test_move() {
   g.board[4][2] = 'w';
   g.board[4][6] = 'W';
   g.board[6][7] = 'W';
+  calculate(g);
+
   GameState cop = g;
   g.move(FIRST, BoardCell(3, 4), BoardCell(4, 3));
   CPPUNIT_ASSERT(!(cop != g));
@@ -373,9 +424,9 @@ void TestGameState::test_move() {
           BoardCell(i, j) != BoardCell(6, 7) &&
           BoardCell(i, j) != BoardCell(5, 5))
         CPPUNIT_ASSERT(g.board[i][j] == cop.board[i][j]);
-  CPPUNIT_ASSERT(g.board[6][7] == '.');
-  CPPUNIT_ASSERT(g.board[4][6] == '.');
-  CPPUNIT_ASSERT(g.board[5][5] == 'W');
+  CPPUNIT_ASSERT(g.board[6][7] == 'W');
+  CPPUNIT_ASSERT(g.board[4][6] == 'W');
+  CPPUNIT_ASSERT(g.board[5][5] == '.');
   return;
 }
 
@@ -395,17 +446,30 @@ void TestGameState::test_get_list() {
   g.board[4][6] = 'W';
   g.board[6][4] = 'b';
   g.board[6][7] = 'W';
-  std::vector<BoardCell> A{BoardCell(4, 5), BoardCell(5, 6), BoardCell(7, 6)};
-  std::vector<BoardCell> B{BoardCell(5, 5)};
-  std::vector<BoardCell> C{BoardCell(7, 3), BoardCell(7, 5)};
-  std::vector<BoardCell> D{BoardCell(0, 2), BoardCell(2, 4), BoardCell(3, 5),
-                           BoardCell(5, 5), BoardCell(5, 7), BoardCell(7, 3)};
+  calculate(g);
 
-  CPPUNIT_ASSERT(g.get_list_of_correct_moves(FIRST, BoardCell(6, 7)) == A);
-  CPPUNIT_ASSERT(g.get_list_of_correct_moves(FIRST, BoardCell(4, 6)) == D);
+  std::vector<BoardCell> A;
+  std::vector<BoardCell> B{BoardCell(5, 5)};
+  std::vector<BoardCell> C;
+  std::vector<BoardCell> D{BoardCell(7, 3), BoardCell(0, 2)};
+  
+  std::vector <BoardCell> result;
+  g.get_list_of_correct_moves(FIRST, BoardCell(6, 7), result);
+  CPPUNIT_ASSERT(result == A);
+  result.clear();
+  
+  g.get_list_of_correct_moves(FIRST, BoardCell(4, 6), result);
+  CPPUNIT_ASSERT(result == D);
+  result.clear();
+
   g.who_last = FIRST;
-  CPPUNIT_ASSERT(g.get_list_of_correct_moves(SECOND, BoardCell(3, 7)) == B);
-  CPPUNIT_ASSERT(g.get_list_of_correct_moves(SECOND, BoardCell(6, 4)) == C);
+  g.get_list_of_correct_moves(SECOND, BoardCell(3, 7), result);
+  CPPUNIT_ASSERT(result == B);
+  result.clear();
+  
+  g.get_list_of_correct_moves(SECOND, BoardCell(6, 4), result);
+  CPPUNIT_ASSERT(result == C);
+  result.clear();
   return;
 }
 
@@ -421,6 +485,8 @@ void TestGameState::test_check_win() {
       g.board[i][j] = '.';
   for (int i = 0; i < g.SIZE; i++)
     g.board[0][i] = 'b', g.board[1][i] = 'w';
+  calculate(g);
+
   g.who_last = SECOND;
   CPPUNIT_ASSERT(g.check_win() == SECOND_WIN);
   g.who_last = FIRST;

@@ -127,15 +127,17 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
   //clock_t current_time = clock();
   //if (1.0 * (current_time - start_time) / CLOCKS_PER_SEC > seconds)
     //return std::make_pair(score(G), Move());
-  clock_t st = clock();
+  
   number_of_player player = G.who_moves();
+
   std::vector <Move> moves;
   int delta, up, down, lef, rig;
   if (player == SECOND)
     up = 0, down = G.SIZE, lef = 0, rig = G.SIZE, delta = 1;
   else
     up = G.SIZE - 1, down = -1, lef = G.SIZE - 1, rig = -1, delta = -1;
- 
+
+  clock_t st = clock();
   for (int i = up; i != down; i += delta)
     for (int j = lef; j != rig; j += delta) {
       std::vector<BoardCell> correct;
@@ -145,6 +147,7 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
     }
   clock_t fn = clock();
   len += 1.0 * (fn - st) / CLOCKS_PER_SEC;
+
   if (moves.empty()) {
     if (player == FIRST)
       total = std::make_pair(-INF, Move());
@@ -165,9 +168,12 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
       cop.move(player, moves[i].from, moves[i].to);
       act.push_back(std::thread(alpha_beta, std::ref(cop), alpha, beta, 
                                 deep - fl, std::ref(res[i]), false));
+      if ((i + 1) % NUMBER_OF_THREADS == 0) {
+        for (int j = 0; j < (int)act.size(); j++)
+          act[j].join();
+        act.clear();
+      }
     }
-    for (int i = 0; i < (int)moves.size(); i++)
-      act[i].join();
   }
 
   for (int i = 0; i < (int)moves.size(); i++) {
@@ -210,7 +216,7 @@ Move CompPlayer::get_next_move(const GameState &G, int seconds, int deep) const 
   (void)seconds;
   cnt1 = 0, cnt2 = 0, len = 0;
   clock_t start = clock();
-  alpha_beta(G, -INF, INF, deep, result, false);
+  alpha_beta(G, -INF, INF, deep, result, true);
   clock_t finish = clock();
   std::cout << 1.0 * (finish - start) / CLOCKS_PER_SEC << '\n' << len << '\n' <<
             cnt1 << ' ' << cnt2 << '\n';

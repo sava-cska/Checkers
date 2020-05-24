@@ -16,6 +16,7 @@ private:
 
   mutable GameState gs;
 
+  static const int NUMBER_OF_THREADS = 4;
 public:
   CompPlayer(number_of_player, int seconds, int deep);
 

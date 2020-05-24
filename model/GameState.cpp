@@ -14,6 +14,34 @@ GameState::GameState() {
     board[1][j] = 'b', board[SIZE - 3][j] = 'w', board[SIZE - 1][j] = 'w';
   for (int j = 1; j < SIZE; j += 2)
     board[0][j] = 'b', board[2][j] = 'b', board[SIZE - 2][j] = 'w';
+  
+  for (int i = 0; i < SIZE; i++)
+    for (int j = 0; j < SIZE; j++) {
+      if (i == 0 || j == 0)
+        white_up_down[i][j] = black_up_down[i][j] = 0;
+      else {
+        white_up_down[i][j] = white_up_down[i - 1][j - 1];
+        black_up_down[i][j] = black_up_down[i - 1][j - 1];
+      }
+      if (board[i][j] == 'w' || board[i][j] == 'W')
+        white_up_down[i][j]++;
+      if (board[i][j] == 'b' || board[i][j] == 'B')
+        black_up_down[i][j]++;
+    }
+
+  for (int i = SIZE - 1; i >= 0; i--)
+    for (int j = 0; j < SIZE; j++) {
+      if (i == SIZE - 1 || j == 0)
+        white_down_up[i][j] = black_down_up[i][j] = 0;
+      else {
+        white_down_up[i][j] = white_down_up[i + 1][j - 1];
+        black_down_up[i][j] = black_down_up[i + 1][j - 1];
+      }
+      if (board[i][j] == 'w' || board[i][j] == 'W')
+        white_down_up[i][j]++;
+      if (board[i][j] == 'b' || board[i][j] == 'B')
+        black_down_up[i][j]++;
+    }
   return;
 }
 
@@ -56,25 +84,28 @@ bool GameState::check_queen(number_of_player player, BoardCell from,
     return false;
   if (to.x + to.y != from.x + from.y && to.x - to.y != from.x - from.y)
     return false;
-
-  int cntb = 0, cntw = 0, dy = (to.x + to.y == from.x + from.y ? -1 : 1);
-  while (to != from) {
-    if (board[to.x][to.y] == 'w' || board[to.x][to.y] == 'W')
-      cntw++;
-    if (board[to.x][to.y] == 'b' || board[to.x][to.y] == 'B')
-      cntb++;
-    if (to.x < from.x)
-      to.x++, to.y += dy;
-    else
-      to.x--, to.y -= dy;
+  
+  int bal_white = 0, bal_black = 0;
+  if (from.x - from.y == to.x - to.y) {
+    if (from.y < to.y)
+      std::swap(from, to);
+    bal_white = white_up_down[from.x - 1][from.y - 1] - white_up_down[to.x][to.y];
+    bal_black = black_up_down[from.x - 1][from.y - 1] - black_up_down[to.x][to.y];
   }
-  die = (cntw + cntb > 0);
+  else {
+    if (from.y < to.y)
+      std::swap(from, to);
+    bal_white = white_down_up[from.x + 1][from.y - 1] - white_down_up[to.x][to.y];
+    bal_black = black_down_up[from.x + 1][from.y - 1] - black_down_up[to.x][to.y];
+  }
+
+  die = (bal_white + bal_black > 0);
   if (player == FIRST)
-    if (cntw == 0 && cntb <= 1)
+    if (bal_white == 0 && bal_black <= 1)
       return true;
     else
       return false;
-  else if (cntb == 0 && cntw <= 1)
+  else if (bal_black == 0 && bal_white <= 1)
     return true;
   else
     return false;
@@ -110,14 +141,18 @@ bool GameState::kill(number_of_player who, BoardCell pos) const {
         }
     return false;
   }
-  for (int c = 2; c <= SIZE; c++)
-    for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
-      for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+  
+  for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
+    for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+      BoardCell cop = BoardCell(pos.x + 2 * sgn1, pos.y + 2 * sgn2);
+      while (inside(cop)) {
         bool die = false;
-        if (check_move(who, pos, BoardCell(pos.x + c * sgn1, pos.y + c * sgn2), die))
+        if (check_move(who, pos, cop, die))
           if (die)
             return true;
-        }
+        cop.x += sgn1, cop.y += sgn2;
+      }
+    }
   return false;
 }
 
@@ -153,6 +188,43 @@ number_of_player GameState::who_moves() const {
   }
 }
 
+void GameState::change_prefix(BoardCell pos, char news) {
+  if (board[pos.x][pos.y] == news)
+    return;
+  if (board[pos.x][pos.y] != '.') {
+    for (int shift = 0; pos.x + shift < SIZE && pos.y + shift < SIZE; shift++) {
+      if (board[pos.x][pos.y] == 'w' || board[pos.x][pos.y] == 'W')
+        white_up_down[pos.x + shift][pos.y + shift]--;
+      else
+        black_up_down[pos.x + shift][pos.y + shift]--;
+    }
+    
+    for (int shift = 0; pos.x - shift >= 0 && pos.y + shift < SIZE; shift++) {
+      if (board[pos.x][pos.y] == 'w' || board[pos.x][pos.y] == 'W')
+        white_down_up[pos.x - shift][pos.y + shift]--;
+      else
+        black_down_up[pos.x - shift][pos.y + shift]--;
+    }
+  }
+  
+  if (news != '.') {
+    for (int shift = 0; pos.x + shift < SIZE && pos.y + shift < SIZE; shift++) {
+      if (news == 'w' || news == 'W')
+        white_up_down[pos.x + shift][pos.y + shift]++;
+      else
+        black_up_down[pos.x + shift][pos.y + shift]++;
+    }
+    
+    for (int shift = 0; pos.x - shift >= 0 && pos.y + shift < SIZE; shift++) {
+      if (news == 'w' || news == 'W')
+        white_down_up[pos.x - shift][pos.y + shift]++;
+      else
+        black_down_up[pos.x - shift][pos.y + shift]++;
+    }
+  }
+  return;
+}
+
 void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
   bool die = false;
   if (who_moves() != player)
@@ -166,6 +238,7 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
   int dy = (to.x + to.y == from.x + from.y ? -1 : 1);
   BoardCell cop = to;
   while (cop != from) {
+    change_prefix(cop, '.');
     board[cop.x][cop.y] = '.';
     if (cop.x < from.x)
       cop.x++, cop.y += dy;
@@ -173,6 +246,8 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
       cop.x--, cop.y -= dy;
   }
   if (die) {
+    change_prefix(to, board[from.x][from.y]);
+    change_prefix(from, board[to.x][to.y]);
     std::swap(board[to.x][to.y], board[from.x][from.y]);
     who_last = player;
     move_to_draw = 0;
@@ -188,6 +263,8 @@ void GameState::move(number_of_player player, BoardCell from, BoardCell to) {
       move_to_draw++;
     type_last = 0;
     last_move = to;
+    change_prefix(to, board[from.x][from.y]);
+    change_prefix(from, board[to.x][to.y]);
     std::swap(board[to.x][to.y], board[from.x][from.y]);
   }
   if (player == FIRST && to.x == 0 && board[to.x][to.y] == 'w')
@@ -207,14 +284,16 @@ void GameState::get_list_of_correct_moves(number_of_player player, BoardCell fro
   if (!fl && find_kill(player)) //Запрещаем не рубить
     return;
   
-  int bound = (board[from.x][from.y] >= 'a' && board[from.x][from.y] <= 'z' ? 2 : SIZE);
-  for (int c = 1; c <= bound; c++)
-    for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
-      for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+  for (int sgn1 = -1; sgn1 <= 1; sgn1 += 2)
+    for (int sgn2 = -1; sgn2 <= 1; sgn2 += 2) {
+      BoardCell cop = BoardCell(from.x + sgn1, from.y + sgn2);
+      while (inside(cop)) {
         bool die = false;
-        if (check_move(player, from, BoardCell(from.x + c * sgn1, from.y + c * sgn2), die)) {
+        if (check_move(player, from, cop, die)) {
           if (!fl || die)
-            moves.push_back(BoardCell(from.x + c * sgn1, from.y + c * sgn2));
+            moves.push_back(cop);
+        }
+        cop.x += sgn1, cop.y += sgn2;
       }
     }
   return;
