@@ -1,6 +1,7 @@
 #include "Network.hpp"
 #include "Event.hpp"
 #include <iostream>
+#include <stdexcept>
 
 using std::pair;
 
@@ -11,6 +12,9 @@ void Network::update() {
   //  std::cerr << "no moves from enemy...\n";
   while (enemy_socket.receive(packet) == sf::Socket::Done) {
     events.push(std::shared_ptr<controller::Event>(controller::unpack(packet)));
+  }
+  if (enemy_socket.receive(packet) == sf::Socket::Disconnected) {
+    throw std::logic_error("Enemy has disconnected!");
   }
 }
 

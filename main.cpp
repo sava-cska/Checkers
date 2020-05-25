@@ -102,7 +102,12 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
       core.update(game_test, player);
     }
     core.compiling_event(game_test);
-    network.update();
+    try {
+      network.update();
+    } catch(const std::logic_error &e) {
+      std::cerr << e.what() << "\n";
+      return 0;
+    }
 
     game_state = game_test.return_current_state();
 
