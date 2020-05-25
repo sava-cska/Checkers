@@ -6,7 +6,6 @@
 static const int INF = (int)1e9;
 
 int cnt1 = 0, cnt2 = 0;
-double len;
 
 CompPlayer::CompPlayer(number_of_player turn, int seconds, int deep)
     : controller::IPlayer(turn), seconds_(seconds), deep_(deep) {}
@@ -137,7 +136,6 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
   else
     up = G.SIZE - 1, down = -1, lef = G.SIZE - 1, rig = -1, delta = -1;
 
-  clock_t st = clock();
   for (int i = up; i != down; i += delta)
     for (int j = lef; j != rig; j += delta) {
       std::vector<BoardCell> correct;
@@ -145,8 +143,6 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
       for (int z = 0; z < (int)correct.size(); z++)
         moves.push_back(Move(BoardCell(i, j), correct[z]));
     }
-  clock_t fn = clock();
-  len += 1.0 * (fn - st) / CLOCKS_PER_SEC;
 
   if (moves.empty()) {
     if (player == FIRST)
@@ -174,6 +170,9 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
         act.clear();
       }
     }
+    for (int j = 0; j < (int)act.size(); j++)
+      act[j].join();
+    act.clear();
   }
 
   for (int i = 0; i < (int)moves.size(); i++) {
@@ -214,11 +213,11 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
 Move CompPlayer::get_next_move(const GameState &G, int seconds, int deep) const {
   std::pair<int, Move> result;
   (void)seconds;
-  cnt1 = 0, cnt2 = 0, len = 0;
+  cnt1 = 0, cnt2 = 0;
   clock_t start = clock();
   alpha_beta(G, -INF, INF, deep, result, true);
   clock_t finish = clock();
-  std::cout << 1.0 * (finish - start) / CLOCKS_PER_SEC << '\n' << len << '\n' <<
+  std::cout << 1.0 * (finish - start) / CLOCKS_PER_SEC << '\n' <<
             cnt1 << ' ' << cnt2 << '\n';
   return result.second;
 }
