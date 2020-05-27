@@ -164,7 +164,7 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
       cop.move(player, moves[i].from, moves[i].to);
       act.push_back(std::thread(alpha_beta, std::ref(cop), alpha, beta,
                                 deep - fl, std::ref(res[i]), false));
-      if (i % NUMBER_OF_THREADS == 0) {
+      if ((i+1) % NUMBER_OF_THREADS == 0) {
         for (int j = 0; j < (int)act.size(); j++)
           act[j].join();
         act.clear();

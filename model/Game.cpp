@@ -26,16 +26,22 @@ GameState Game::watch_state(int number) const {
 
 GameState& Game::return_current_state() { return current; }
 
+static char to_char(int a) {
+  return a + 96;
+}
+
 void Game::move(number_of_player player, BoardCell from, BoardCell to) {
   GameState copy = current;
   current.move(player, from, to);
   if (current != copy) {
     game.push_back(current);
     natation.push_back(std::to_string(number_of_states() - 1) + "." + 
-    std::to_string((8 - from.x) * 10 + from.y) + ">" + std::to_string((8 -to.x) * 10 + to.y));
+    to_char(from.y + 1) + std::to_string(8 - from.x) + ">" + to_char(to.y + 1) +  std::to_string(8 - to.x));
   }
   return;
 }
+
+
 
 void Game::save_to_file(const std::string &file) const {
   std::ofstream os(file);
