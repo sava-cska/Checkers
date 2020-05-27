@@ -1,6 +1,8 @@
 #ifndef CHECKERS_UI_DRAW_SMF_HPP_
 #define CHECKERS_UI_DRAW_SMF_HPP_
 
+#define SFML_NO_DEPRECATED_WARNINGS
+
 #include "Event.hpp"
 #include "Game.hpp"
 #include <SFML/Graphics.hpp>
@@ -57,6 +59,8 @@ private:
   float possition_of_scroll = 0; // [0, 0.9]
   bool press_the_scroll = 0;
 
+  sf::Font font;
+
 public:
   sf::RenderWindow window = {sf::VideoMode(1280, 720), "Chess"};
   void update(Game &game, controller::IPlayer *player);
@@ -77,7 +81,7 @@ private:
   void draw_table(std::list<Frame> &rendrer_list, GameState &, int collision,
                   sf::Vector2f lu_point = sf::Vector2f(320, 40),
                   sf::Vector2f rd_point = sf::Vector2f(960, 680));
-  void draw_history(std::list<Frame> &render_list,  int maximum,
+  void draw_history(std::list<Frame> &render_list,  int maximum, Game&,
                      sf::Vector2f lu_point = sf::Vector2f(40, 40),
                      sf::Vector2f rd_point = sf::Vector2f(280, 680));
   void draw_possible(std::list<Frame> &render_list, GameState &game_state,
@@ -87,6 +91,9 @@ private:
   void draw_SafeLoad(std::list<Frame> &render_list,
                      sf::Vector2f lu_point = sf::Vector2f(40, 40),
                      sf::Vector2f rd_point = sf::Vector2f(280, 120));
+  void draw_current_player(std::list<Frame> &render_list,  Game&,
+                     sf::Vector2f lu_point = sf::Vector2f(1000, 330),
+                     sf::Vector2f rd_point = sf::Vector2f(1240, 390));
 };
 
 #endif

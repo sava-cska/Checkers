@@ -57,7 +57,8 @@ void Gra::draw_possible(std::list<Frame> &render_list, GameState &game_state,
                         BoardCell past, sf::Vector2f lu_point,
                         sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
-  auto b = game_state.get_list_of_correct_moves(game_state.who_moves(), past);
+  std::vector <BoardCell> b;
+  game_state.get_list_of_correct_moves(game_state.who_moves(), past, b);
   for (auto &a : b) {
     sf::RectangleShape block;
     block.setSize(size / 8);
@@ -86,6 +87,12 @@ void Gra::draw_SafeLoad(std::list<Frame> &render_list, sf::Vector2f lu_point,
 void Gra::drawing() {
   for (auto &elem : render_list) {
     window.draw(elem.picture);
+    if (elem.data2 != "") {
+      sf::Text texting(elem.data2, font, 40);
+      texting.setColor(sf::Color::Black);
+      texting.setPosition(elem.picture.getPosition());
+      window.draw(texting);
+    }
   }
 
   window.display();
@@ -101,7 +108,8 @@ void Gra::update(Game &game, controller::IPlayer *player) {
   if (state.who_moves() == player->turn) {
     draw_possible(render_list, state, past);
   }
-  draw_history(render_list, game.number_of_states());
+  draw_history(render_list, game.number_of_states(), game);
+  draw_current_player(render_list, game);
 }
 
 void Gra::compiling_event(Game &game) {
@@ -127,8 +135,9 @@ void Gra::compiling_event(Game &game) {
         int y = res.data[0];
 
         BoardCell next = {y, x};
-
-        if (game.return_current_state().check_move(game.return_current_state().who_moves(), past, next)) {
+        
+        bool die = false;
+        if (game.return_current_state().check_move(game.return_current_state().who_moves(), past, next, die)) {
           events.push(std::shared_ptr<controller::Event>(new controller::MoveEvent(past, next)));
         }
         past = next;
@@ -152,6 +161,10 @@ void Gra::compiling_event(Game &game) {
 
         if (past.x == -5) {
           press_the_scroll = 1;
+        }
+
+        if (past.x == -6) {
+          events.push(std::shared_ptr<controller::Event>(new controller::GiveUpEvent()));
         }
       }
     if (event.type == sf::Event::MouseButtonReleased) {
@@ -191,7 +204,7 @@ Gra::Frame &Gra::collision(sf::Vector2f posi) {
 std::queue<std::shared_ptr<controller::Event>> &Gra::get_events() { return events; }
 
 void Gra::draw_turn(std::list<Frame> &render_list,
-                  std::string , int number, 
+                  std::string str, int number, 
                   sf::Vector2f lu_point,
                   sf::Vector2f rd_point) {
   sf::Vector2f size = rd_point - lu_point;
@@ -202,13 +215,7 @@ void Gra::draw_turn(std::list<Frame> &render_list,
   block.setFillColor(sf::Color::Green);
   block.setOutlineColor(sf::Color::Black);
   block.setOutlineThickness(2);
-  sf::Text text;
-  /*text.setString(str);
-  block.setSize(size / 2);
-  block.setPosition({0, 0});
-  block.move(lu_point + size / 4);
-  //text.getTransform());*/
-  render_list.push_back(Frame(block, 1, {-3, number}, ""));
+  render_list.push_back(Frame(block, 1, {-3, number}, str));
   
   
   lu_point.x += size.x * 7 / 8;
@@ -220,7 +227,7 @@ void Gra::draw_turn(std::list<Frame> &render_list,
   render_list.push_back(Frame(block, 1, {-4, number}, ""));
 }
 
-void Gra::draw_history(std::list<Frame> &render_list, int maximum,
+void Gra::draw_history(std::list<Frame> &render_list, int maximum, Game& game,
                      sf::Vector2f lu_point ,
                      sf::Vector2f rd_point ) {
   float dx = rd_point.x - lu_point.y; 
@@ -233,8 +240,13 @@ void Gra::draw_history(std::list<Frame> &render_list, int maximum,
   delta = delta / 8;
 
   rd_point.y = lu_point.y + delta.y;
-  for (int i = (int)(maximum * possition_of_scroll); i < std::min(maximum, (int)(maximum * possition_of_scroll) + 8); i++) {
-     draw_turn(render_list, "", i, lu_point, rd_point);
+
+  int start = (maximum * possition_of_scroll);
+  start = std::min(start, std::max(0, game.number_of_states()- 8));
+  int finish = start + (std::min(8, game.number_of_states()));
+
+  for (int i = start; i < finish; i++) {
+     draw_turn(render_list, game.natation[i], i, lu_point, rd_point);
      rd_point += delta;
      lu_point += delta;
   }
@@ -259,13 +271,32 @@ void Gra::draw_history(std::list<Frame> &render_list, int maximum,
 }
 
 Gra::Gra() {
-    window.setFramerateLimit(60);
-    b.loadFromFile("./sprites/b.png");
-    B.loadFromFile("./sprites/B.png");
-    W.loadFromFile("./sprites/W.png");
-    w.loadFromFile("./sprites/w.png");
-    sprites.emplace('b', &b);
-    sprites.emplace('B', &B);
-    sprites.emplace('W', &W);
-    sprites.emplace('w', &w);
-  }
+  window.setFramerateLimit(60);
+  b.loadFromFile("./sprites/b.png");
+  B.loadFromFile("./sprites/B.png");
+  W.loadFromFile("./sprites/W.png");
+  w.loadFromFile("./sprites/w.png");
+  sprites.emplace('b', &b);
+  sprites.emplace('B', &B);
+  sprites.emplace('W', &W);
+  sprites.emplace('w', &w);
+
+  font.loadFromFile("./fonts/1.otf");
+}
+
+
+void Gra::draw_current_player(std::list<Frame> &render_list,  Game& game,
+                     sf::Vector2f lu_point,
+                     sf::Vector2f rd_point) {
+  sf::Vector2f size = rd_point - lu_point;
+  sf::RectangleShape block;
+  block.setSize(size);
+  block.setPosition({0, 0});
+  block.move(lu_point);
+  block.setFillColor(sf::Color::Green);
+  render_list.push_back(Frame(block, 0, {-1, 0}, std::to_string(game.return_current_state().who_moves() + 1) + " is moving"));
+
+  block.move({0, 60});
+  block.setFillColor(sf::Color::Blue);
+  render_list.push_back(Frame(block, 1, {-6, 0}, "Give up"));
+}

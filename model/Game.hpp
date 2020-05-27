@@ -24,6 +24,8 @@ public:
   friend void XMLCALL endElement(void *userData, const XML_Char *name);
 
   friend class TestGame;
+
+  std::vector<std::string> natation;
 };
 
 #endif

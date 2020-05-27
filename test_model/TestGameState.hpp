@@ -5,8 +5,12 @@
 #include <cppunit/extensions/HelperMacros.h>
 #include <cppunit/ui/text/TestRunner.h>
 
+#include "GameState.hpp"
+
 class TestGameState : public CppUnit::TestFixture {
 private:
+  void calculate(GameState &G);
+
   void test_init();
   void test_ordinary();
   void test_queen();

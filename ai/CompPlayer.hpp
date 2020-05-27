@@ -3,22 +3,20 @@
 
 #include "GameState.hpp"
 #include "Player.hpp"
-#include <ctime>
-#include <random>
 
 class CompPlayer : public controller::IPlayer {
 private:
   int seconds_;
   int deep_;
 
-  std::pair<int, Move> alpha_beta(GameState G, int alpha, int beta,
-                                  clock_t start_time, int seconds, int deep,
-                                  std::mt19937 gen) const;
-  int score(GameState G) const;
-  Move get_next_move(GameState G, int seconds, int deep) const;
+  static void alpha_beta(const GameState &G, int alpha, int beta, 
+                         int deep, std::pair <int, Move> &total, bool flow);
+  static int score(const GameState &G);
+  Move get_next_move(const GameState &G, int seconds, int deep) const;
 
   mutable GameState gs;
 
+  static const int NUMBER_OF_THREADS = 4;
 public:
   CompPlayer(number_of_player, int seconds, int deep);
 

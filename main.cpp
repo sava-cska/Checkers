@@ -106,6 +106,10 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
 
     game_state = game_test.return_current_state();
 
+    if (mode == "ai") {
+      (dynamic_cast<CompPlayer *>(enemy))->set_game_state(game_state);
+    }
+
     while (!core.get_events().empty()) {
       controller::Event *event = core.get_events().front().get();
       controller::MoveEvent *move =
@@ -115,7 +119,7 @@ int main(int argc, char **argv) { // TODO: make own main for every game mode
 
       controller::GiveUpEvent *giveUp =
           dynamic_cast<controller::GiveUpEvent *>(event);
-      controller::process(giveUp, enemy, player, game_test, mode);
+      controller::process(giveUp, player, enemy, game_test, mode);
 
       // currently, there is only MoveEvent.
       // TODO: need to process another events!

@@ -19,26 +19,29 @@ private:
   int move_to_draw, type_last;
   BoardCell last_move;
   char board[SIZE][SIZE];
+  int white_up_down[SIZE][SIZE], white_down_up[SIZE][SIZE];
+  int black_up_down[SIZE][SIZE], black_down_up[SIZE][SIZE];
 
-  bool check_ordinary(number_of_player player, BoardCell from,
-                      BoardCell to) const;
-  bool check_queen(number_of_player player, BoardCell from, BoardCell to) const;
+  bool check_ordinary(number_of_player player, BoardCell from, BoardCell to, bool &die) const;
+  bool check_queen(number_of_player player, BoardCell from, BoardCell to, bool &die) const;
   bool inside(BoardCell cell) const;
   bool kill(number_of_player who, BoardCell pos) const;
-  bool is_kill(number_of_player who, BoardCell from, BoardCell to) const;
-  BoardCell find_kill(number_of_player who) const;
+  bool find_kill(number_of_player who) const;
+
+  void change_prefix(BoardCell pos, char news);
+  void show() const;
 
 public:
   GameState();
+  GameState(const GameState &oth) = default;
+  GameState& operator=(const GameState &oth) = default;
 
   number_of_player who_moves() const;
-  bool check_move(number_of_player player, BoardCell from, BoardCell to) const;
+  bool check_move(number_of_player player, BoardCell from, BoardCell to, bool &die) const;
   void move(number_of_player player, BoardCell from, BoardCell to);
-  std::vector<BoardCell> get_list_of_correct_moves(number_of_player player,
-                                                   BoardCell from) const;
+  void get_list_of_correct_moves(number_of_player player, BoardCell from, std::vector <BoardCell> &moves) const;
   state check_win() const;
   char get_cell(BoardCell cell) const;
-  void show() const;
 
   friend bool operator!=(const GameState &fir, const GameState &sec);
 
