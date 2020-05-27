@@ -164,7 +164,7 @@ void Gra::compiling_event(Game &game) {
         }
 
         if (past.x == -6) {
-          //ТУТА
+          events.push(std::shared_ptr<controller::Event>(new controller::GiveUpEvent()));
         }
       }
     if (event.type == sf::Event::MouseButtonReleased) {
@@ -298,5 +298,5 @@ void Gra::draw_current_player(std::list<Frame> &render_list,  Game& game,
 
   block.move({0, 60});
   block.setFillColor(sf::Color::Blue);
-  render_list.push_back(Frame(block, 1, {-6, 0}, "secret button"));
+  render_list.push_back(Frame(block, 1, {-6, 0}, "Give up"));
 }

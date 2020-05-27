@@ -162,9 +162,9 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
     for (int i = 0; i < (int)moves.size(); i++) {
       GameState cop = G;
       cop.move(player, moves[i].from, moves[i].to);
-      act.push_back(std::thread(alpha_beta, std::ref(cop), alpha, beta, 
+      act.push_back(std::thread(alpha_beta, std::ref(cop), alpha, beta,
                                 deep - fl, std::ref(res[i]), false));
-      if ((i + 1) % NUMBER_OF_THREADS == 0) {
+      if (i % NUMBER_OF_THREADS == 0) {
         for (int j = 0; j < (int)act.size(); j++)
           act[j].join();
         act.clear();
@@ -174,6 +174,8 @@ void CompPlayer::alpha_beta(const GameState &G, int alpha, int beta,
       act[j].join();
     act.clear();
   }
+
+//  std::cerr << "OK!" << std::endl;
 
   for (int i = 0; i < (int)moves.size(); i++) {
       if (!flow) {
